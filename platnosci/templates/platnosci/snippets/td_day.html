@@ -1,0 +1,40 @@
+<td class="days {% if day.0|stringformat:"s" == request.GET.d %} clicked-day{% endif %}{% if sunday %}{{ sunday }}{% endif %}">
+  {% with day.0 as day_in_box %}
+  <a href="?y={{ year }}&m={{ month }}&d={{ day.0 }}">
+    <div class="expander">
+      <div class="container">
+        <div class="row">
+            <div class="col">
+            {% if day_in_box != 0 %}
+              {% if day.0|stringformat:"s" == request.GET.d %}
+                <div class="day-num" id="clicked-day-num">{{ day_in_box }}</div>
+              {% else %}
+                <div class="day-num">{{ day_in_box }}</div>
+              {% endif %}
+            {% endif %}
+            </div>
+            <!-- HTML String dzień tygodnia jezeli 1szy rząd -->
+            <div class="col">
+              {% if forloop.parentloop.counter == 1 %}
+                <span class="day-of-week float-right">{{ day_string }}</span>
+              {% endif %}
+            </div>
+        </div>
+        <div class="row">
+          <div class="container">
+            {% for payment in pay_queryset %}
+              {% if day.0 == payment.termin.day %}
+              <div class="row badge-row">
+                <div class="col-12" style="padding-left:0;padding-right:0">
+                  <div class="badge badge-success" style="width:100%;">{{ payment.kwota_zaksiegowana }} z {{ payment.kwota }} {{ payment.umowa.waluta }}</div>
+                </div>
+              </div>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </a>
+  {% endwith %}
+</td>

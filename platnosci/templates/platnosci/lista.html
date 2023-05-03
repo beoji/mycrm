@@ -1,0 +1,105 @@
+{% extends "base_generic.html" %}
+
+{% block full-payment-view %}
+Lista płatności
+<div class="container-fluid">
+  <table class="table table-sm" id="payment-list">
+  <thead>
+    <tr>
+      <th>Nr płatności</th>
+      <th>Kwota</th>
+      <th>Kwota Zaksięgowana</th>
+      <th>Termin</th>
+      <th>Umowa</th>
+      <th>Kontrahent</th>
+      <th>Edycja</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for miesiac, platnosci in list.items %}
+    <tr class="table-success">
+     <td colspan="8">{{ miesiac|date:"d.m" }}</td>
+    </tr>
+    {% for platnosc in platnosci %}
+      <tr>
+        <td>#{{ platnosc.pk }}</td>
+        <td>{{ platnosc.kwota }} {{ platnosc.waluta }}</td>
+        <td>{{ platnosc.kwota_zaksiegowana }} {{ platnosc.umowa.waluta }}</td>
+        <td>{{ platnosc.termin }}</td>
+        <td>
+          <a href="{% url 'escrm:umowa-detail' platnosc.umowa.kontrahent.pk platnosc.umowa.pk %}" class="btn btn-link pay-link">
+            {{ platnosc.umowa.temat }}
+          </a>
+        </td>
+        <td>
+          <a href="{% url 'escrm:kontrahent-detail' platnosc.umowa.kontrahent.pk  %}" class="btn btn-link pay-link">
+            {{ platnosc.umowa.kontrahent }}
+          </a>
+        </td>
+        <td>
+          <a data-id="{{ platnosc.pk }}" data-url="{% url 'platnosci:payment-update' platnosc.pk %}" class="btn btn-link btn-sm payment-update" href="#" style="font-size:12px;padding: 0;">
+            <i class="fas fa-pencil-alt"></i>
+          </a>
+        </td>
+      </tr>
+    {% endfor %}
+  {% endfor %}
+  </tbody>
+  </table>
+</div>
+
+<div id="update-payment-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+
+{% block javascript %}
+
+<script>
+$(function(){
+  $(document).on('click', '.payment-update', function(e){
+    var data_url = $(this).attr('data-url');
+    $.ajax({
+      url: data_url,
+      type: 'get',
+      dataType: 'json',
+      success: function(data){
+        $('#update-payment-modal .modal-content').empty();
+        $('#update-payment-modal .modal-content').html(data.modal);
+        $('#update-payment-modal').modal('show');
+      }
+    })
+  });
+  $(document).on('click', '#payment-update-save', function(e){
+    var data_url = $(this).attr('data-url');
+    $.ajax({
+      url: data_url,
+      type: 'post',
+      dataType: 'json',
+      data: {
+        termin: $('#id_termin').val(),
+        kwota: $('#id_kwota').val(),
+        kwota_zaksiegowana: $('#id_kwota_zaksiegowana').val(),
+        csrfmiddlewaretoken: $('#update-payment-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data){
+        if (data.result == 'success'){
+          alert('saved');
+          $('#update-payment-modal').modal('hide');
+        } else {
+          $('#update-payment-modal .modal-content').empty();
+          $('#update-payment-modal .modal-content').html(data.modal);
+        }
+      }
+    })
+  });
+});
+</script>
+
+{% endblock %}

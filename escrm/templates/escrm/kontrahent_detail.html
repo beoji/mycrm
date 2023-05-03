@@ -1,0 +1,361 @@
+{% extends "dashboard_template.html" %}
+{% block breadcrumbs %}
+    {{ block.super }} / {{ kontrahent.nazwa_krotka }}
+{% endblock %}
+{% block content %}
+<div class="container-tables-crm">
+  <div class="row">
+    <div class="col-sm-6">
+      <ul class="display-static-list">
+        <li class="static-list-field-label">
+          nazwa kontrahenta,
+          <a href="{% url 'escrm:kontrahent-update' kontrahent.pk %}">edycja</a>
+        </li>
+        <li class="static-list-field-value">{{ kontrahent.nazwa_krotka }}</li>
+        <li class="static-list-field-label">pełna nazwa kontrahenta</li>
+        <li class="static-list-field-value">{{ kontrahent.nazwa_dluga }}</li>
+        <li class="static-list-field-label">NIP</li>
+        <li class="static-list-field-value">{{ kontrahent.nip }}</li>
+        {% for adreskontrahent in kontrahent.adreskontrahent_set.all %}
+          {% if adreskontrahent.czy_domyslny %}
+            <li class="static-list-field-label">
+              adres,
+              <a href="#" data-toggle="modal" data-target="#create-adres-modal">+dodaj adres</a>,
+              <!--modal view-->
+              <a href="#" data-toggle="modal" data-target="#list-adres-modal">lista adresów</a>
+              <!--modal view-->
+            </li>
+            <li class="static-list-field-value" id="kontrahent-adres">
+              {{ adreskontrahent.ulica }}, {{ adreskontrahent.kod_pocztowy }}, {{ adreskontrahent.miasto }}
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </div>
+
+    <div class="col-sm-6">
+      <span class="static-list-field-label">
+        Kontakty kontrahenta:
+        <a id="create-kontakt-button" href="#" class="float-right" data-toggle="modal" data-target="#create-osoba-modal">+dodaj kontakt</a>
+        <!--modal view-->
+      </span>
+      <div id="osoba-table">
+        {% include 'escrm/osoby/osoba_table.html' %}
+      </div>
+    </div>
+
+  </div>
+
+  <br><br>
+  <div class="submit-row float-right">
+    <a class="btn btn-outline-primary btn-sm" href="{{ next }}">
+      <i class="fas fa-angle-left"></i>
+      Powrót
+    </a>
+    <form action="{%  url 'escrm:kontrahent-delete' kontrahent.pk %}" method="post" class="form-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-danger btn-sm confirm2" style="cursor:pointer">
+        Usuń
+        <i class="far fa-trash-alt"></i>
+      </button>
+    </form>
+  </div>
+
+</div>
+{% endblock content %}
+
+{% block modal %}
+
+<div id="list-adres-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      {% include 'escrm/adresy/kontrahentadres_list_modal.html' %}
+
+    </div>
+  </div>
+</div>
+
+<div id="create-adres-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      {% include 'escrm/adresy/kontrahentadres_form_modal.html' %}
+
+    </div>
+  </div>
+</div>
+
+
+<div id="update-adres-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+
+
+<div id="create-osoba-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+
+      {% include 'escrm/osoby/osoba_form_create_modal.html' %}
+
+    </div>
+  </div>
+</div>
+
+<div id="update-osoba-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+
+{% endblock modal %}
+
+{% block javascript %}
+
+<script>
+
+$(function(){
+
+  setupAjax();
+
+  $(document).on('click', '.confirm1', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć wybraną osobę?");
+      if (conf == true) {
+        return conf;
+      } else {
+        e.preventDefault();
+      }
+  });
+
+  $(document).on('click', '.confirm2', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć wybranego kontrahenta?");
+    if (conf == true) {
+      return conf;
+    } else {
+      e.preventDefault();
+    }
+  });
+
+  $(document).on('click', '.confirm3', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć wybrany adres?");
+    if (conf == true) {
+      return conf;
+    } else {
+      e.preventDefault();
+    }
+  });
+
+  $(document).on('click', '.default-chceck', function (e) {
+    var checkbox = $(this);
+    if (checkbox.is(":checked")) {
+      $('.default-chceck').prop('checked', false);
+      checkbox.prop('checked', true);
+      var checkbox_id = checkbox.attr('id');
+      $.ajax({
+        url: '/escrm/kontrahent/set-default-adress/' + $(this).attr('data-pk'),
+        type: 'get',
+        dataType: 'json',
+        success: function(msg){
+          if(msg.result == 'done') {
+            $('#kontrahent-adres').text(msg.nowy_adres);
+          }
+        }
+      })
+    } else {
+      e.preventDefault();
+      return false;
+    }
+  });
+
+  $(document).on('click', '#js-submit-create-adres', function (e) {
+    var form = $('#create-adres-form');
+    $.ajax({
+      url: form.attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        ulica: $('#id_ulica').val(),
+        kod_pocztowy: $('#id_kod_pocztowy').val(),
+        miasto: $('#id_miasto').val(),
+        kontrahent: {{ kontrahent.pk }},
+        czy_domyslny: 'False',
+        typ_adresu: $('#id_typ_adresu').val(),
+        csrfmiddlewaretoken: $('#create-adres-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data){
+        if(data.is_valid == 'True') {
+          $('#create-adres-modal .modal-content').html(data.new_form);
+          $('#create-adres-modal').modal('hide');
+          $('#list-adres-modal .modal-content').html(data.list_modal);
+          alert('Zapisano');
+        } else {
+          $('#create-adres-modal .modal-content').html(data.invalid_form);
+        }
+      }
+    })
+  });
+
+  $(document).on('click', '.js-submit-delete-adres', function (e){
+    var form = $(this).parent();
+    console.log(form);
+    $.ajax({
+      url: form.attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        csrfmiddlewaretoken: $('#delete-adres input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(msg){
+        if (msg.result == 'success') {
+          var pk = form.attr('data-pk');
+          var element = '#tr_' + pk;
+          $(element).fadeOut();
+        } else if (msg.result == 'domyslny') {
+          alert('Nie można usunąć adresu domyślnego!');
+        }
+      }
+    })
+  });
+
+  $(document).on('click', '.js-get-update-adres', function (e){
+    var url = $(this).attr('data-url');
+    var pk = this.id;
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      data: {
+        'pk': pk,
+      },
+      success: function(data){
+        if (data.result == 'success') {
+          $('#update-adres-modal .modal-content').html(data.modal);
+          $('#list-adres-modal').modal('hide');
+          $('#update-adres-modal').modal('show');
+        } else {
+          alert('Ooops sth gne wrong');
+        }
+      }
+    })
+  });
+
+  $(document).on('click', '#js-submit-update-adres', function (e){
+    var form = $('#update-adres-form');
+    var create_modal_html = $('#create-adres-modal .modal-content').detach();
+
+    $.ajax({
+      url: form.attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        ulica: $('#id_ulica').val(),
+        kod_pocztowy: $('#id_kod_pocztowy').val(),
+        miasto: $('#id_miasto').val(),
+        kontrahent: $('#id_kontrahent').val(),
+        czy_domyslny: $('#update-adres-form input[name=czy_domyslny]').val(),
+        typ_adresu: $('#id_typ_adresu').val(),
+        csrfmiddlewaretoken: $('#update-adres-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data){
+        if(data.is_valid == 'True') {
+          if($('#id_czy_domyslny').val() == 'True'){
+            var nowy_adres = $('#id_ulica').val() + ', ' + $('#id_kod_pocztowy').val() + ', ' + $('#id_miasto').val();
+            $('#kontrahent-adres').text(nowy_adres);
+          }
+          $('#update-adres-modal').modal('hide');
+          $('#list-adres-modal .modal-content').empty();
+          $('#list-adres-modal .modal-content').html(data.list_modal);
+          alert('Zapisano');
+        } else {
+          $('#update-adres-modal .modal-content').html(data.invalid_form);
+        }
+        $('#create-adres-modal .modal-dialog').html(create_modal_html);
+      },
+      error: function (request, status, error) {
+        alert(request.responseText);
+      }
+    })
+  });
+
+  $(document).on('click', '#js-submit-create-osoba', function(e){
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        imie: $('#id_imie').val(),
+        nazwisko: $('#id_nazwisko').val(),
+        stanowisko: $('#id_stanowisko').val(),
+        notatka: $('#id_notatka').val(),
+        kontrahent: {{ kontrahent.pk }},
+        telefon: $('#id_telefon').val(),
+        email: $('#id_email').val(),
+        czy_domyslny: $('#id_czy_domyslny').val(),
+        csrfmiddlewaretoken: $('#create-osoba-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data){
+        if(data.is_valid == 'True'){
+          $('#osoba-table').empty();
+          $('#osoba-table').html(data.table);
+          $('#create-osoba-modal').modal('hide');
+          alert('Zapisano');
+          $('#create-osoba-modal .modal-content').html(data.new_modal);
+        } else {
+          $('#create-osoba-modal .modal-content').html(data.invalid_form);
+        }
+      }
+    })
+  });
+
+  $(document).on('click', '.js-get-update-osoba', function(e){
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'get',
+      dataType: 'json',
+      data: {
+        pk: $(this).attr('data-pk')
+      },
+      success: function(data){
+        $('#update-osoba-modal .modal-content').empty();
+        $('#update-osoba-modal .modal-content').html(data.modal);
+        $('#update-osoba-modal').modal('show');
+      }
+    })
+  });
+
+  $(document).on('click', '#js-submit-update-osoba', function (e){
+    var create_modal_html = $('#create-osoba-modal .modal-content').detach();
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        imie: $('#id_imie').val(),
+        nazwisko: $('#id_nazwisko').val(),
+        stanowisko: $('#id_stanowisko').val(),
+        notatka: $('#id_notatka').val(),
+        kontrahent: {{ kontrahent.pk }},
+        csrfmiddlewaretoken: $('#update-osoba-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function (data) {
+        if(data.is_valid == 'True'){
+          $('#osoba-table').html(data.table);
+          $('#update-osoba-modal').modal('hide');
+          alert('Zapisano');
+        } else {
+          $('#update-osoba-modal .modal-content').html(data.invalid_form);
+        }
+        $('#create-osoba-modal .modal-dialog').html(create_modal_html);
+      }
+    });
+  });
+
+})
+
+</script>
+
+{% endblock javascript %}

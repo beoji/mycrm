@@ -1,0 +1,65 @@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+<!--<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js" ></script>
+<script src="https://cdn.datatables.net/1.10.16/js/dataTables.bootstrap4.min.js" ></script>-->
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.16/b-1.4.2/datatables.min.js"></script>
+<script defer src="https://use.fontawesome.com/releases/v5.0.1/js/all.js"></script>
+
+<script>
+
+$(function () {
+  $('[data-toggle="tooltip"]').tooltip();
+});
+
+function setSearchableColumns() {
+  var table = $('#data').DataTable();
+  $('#data thead').prepend('<tr class="searching-row"></tr>');
+
+  $('#data thead th').each(function(){
+    var title = $(this).text().split(" ")[0];
+    title = title.split("/")[0];
+    $('.searching-row').each(function() {
+      $(this).append('<th><input type="text" class="form-control form-control-sm" id="search_' + title + '" placeholder="Szukaj ' + title + '"/></th>');
+    })
+  });
+
+  table.columns().every(function(index) {
+    var tableColumn = this;
+    $('#data thead').find('input').eq(index).on('keyup change', function (e) {
+      tableColumn.search(this.value).draw();
+    })
+  });
+
+  $('#search_\\#').remove();
+  $('#search_Operacje').remove();
+}
+
+
+function setupAjax(){
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      function getCookie(name) {
+        var cookieValue = null;
+        if (document.cookie && document.cookie != '') {
+          var cookies = document.cookie.split(';');
+          for (var i = 0; i < cookies.length; i++) {
+            var cookie = jQuery.trim(cookies[i]);
+            // Does this cookie string begin with the name we want?
+            if (cookie.substring(0, name.length + 1) == (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+            }
+          }
+        }
+        return cookieValue;
+      }
+      if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+        // Only send the token to relative URLs i.e. locally.
+        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+      }
+    }
+  });
+}
+
+
+</script>

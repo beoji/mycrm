@@ -1,0 +1,16 @@
+<ul class="display-static-list">
+  <li class="static-list-field-label">
+    imię i nazwisko, <a href="#" class="js-get-update-osoba" data-url="{% url 'escrm:osoba-update-get' %}" data-pk="{{ osoba.pk }}">edycja</a>
+  </li>
+  <li class="static-list-field-value">{{ osoba.imie|title }} {{ osoba.nazwisko|title }}</li>
+  <li class="static-list-field-label">stanowisko</li>
+  <li class="static-list-field-value">{{ osoba.stanowisko|title }}</li>
+  <li class="static-list-field-label">kontrahent</li>
+  <li class="static-list-field-value">
+    {% for kontrahent in osoba.kontrahent.all %}
+      <a href="{{ kontrahent.get_absolute_url }}">{{ kontrahent|title }}</a>
+    {% endfor %}
+  </li>
+  <li class="static-list-field-label">notatka</li>
+  <li class="static-list-field-value">{{ osoba.notatka }}</li>
+</ul>

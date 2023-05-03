@@ -1,0 +1,19 @@
+{% for adres in osoba.adresosoba_set.all %}
+  <tr id="tr_{{ adres.pk }}">
+    <td>{{ adres.email }}</td>
+    <td>{{ adres.telefon }}</td>
+    <td>
+      <a href="#" class="btn btn-link btn-sm edit-buttons js-update-osoba-adres"
+         data-pk="{{ adres.pk }}" data-url="{% url 'escrm:adres-osoba-update-get' %}">
+        <i class="fas fa-edit"></i>
+      </a>
+      <form action="" method="post" class="form-inline" id="osoba-adres-delete-form">
+        {% csrf_token %}
+        <a data-url="{% url 'escrm:adres-osoba-delete' adres.pk %}" data-pk="{{ adres.pk }}" href="#"
+                class="btn btn-link btn-sm confirm2 edit-buttons js-delete-osoba-adres" style="cursor:pointer">
+          <i class="far fa-trash-alt"></i>
+        </a>
+      </form>
+    </td>
+  </tr>
+{% endfor %}

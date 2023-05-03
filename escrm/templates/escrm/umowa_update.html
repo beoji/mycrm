@@ -1,0 +1,24 @@
+{% extends "base_generic.html" %}
+
+{% block content-header %}
+    <h2>Edycja umowy</h2>
+{% endblock %}
+
+{% block content %}
+<form action="" method="post">{% csrf_token %}
+    <div class="form-group">
+    <table>
+        {% for field in form %}
+            <tr>
+                <td>{{ field.label_tag }}</td>
+                <td>{{ field }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+    </div>
+    <div class="submit-row">
+        <a class="btn btn-light" href="{% url 'escrm:kontrahent-umowy' umowa.kontrahent.pk %}">Anuluj</a>
+        <input type="submit" class="btn btn-primary" value="Zapisz" style="cursor:pointer;" />
+    </div>
+</form>
+{%  endblock %}

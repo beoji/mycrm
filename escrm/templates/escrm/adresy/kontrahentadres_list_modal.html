@@ -1,0 +1,72 @@
+<div class="modal-header">
+  <h5 class="modal-title" id="lista_kontrahentow_modal_tytul">
+    Lista adresów: {{ object.nazwa_dluga }}
+  </h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <table class="table table-striped table-sm">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Ulica</th>
+        <th>Kod</th>
+        <th>Miasto</th>
+        <th>Edycja</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for adres in object.adreskontrahent_set.all %}
+      <tr id="tr_{{ adres.pk }}">
+        <th>{{ forloop.counter }}</th>
+        <td>{{ adres.ulica }}</td>
+        <td>{{ adres.kod_pocztowy }}</td>
+        <td>{{ adres.miasto }}</td>
+        <td>
+          <a class="btn btn-link btn-sm js-get-update-adres"
+             href="#"
+             id="{{ adres.pk }}"
+             title="Edytuj"
+             data-url="{% url 'escrm:adres-kontrahent-update-get' %}"
+             data-toggle="tooltip"
+             data-placement="bottom"
+             data-trigger="hover">
+            <i class="fas fa-edit"></i>
+          </a>
+          <form data-pk="{{ adres.pk }}" data-url="{% url 'escrm:adres-kontrahent-delete' adres.pk %}" method="post" class="form-inline" id="delete-adres">
+          {% csrf_token %}
+            <button
+                type="button"
+                class="btn btn-link btn-sm confirm3 js-submit-delete-adres"
+                style="cursor:pointer"
+                title="Usuń"
+                data-toggle="tooltip"
+                data-placement="bottom"
+                data-trigger="hover">
+              <i class="far fa-trash-alt"></i>
+            </button>
+            <label class="custom-control custom-checkbox"
+                   title="Domyślny"
+                   data-toggle="tooltip"
+                   data-placement="bottom"
+                   data-trigger="hover"
+                   style="cursor:pointer">
+              <input type="checkbox" data-pk="{{ adres.pk }}" class="custom-control-input default-chceck"
+              {% if adres.czy_domyslny is True %} checked {% endif %}>
+              <span class="custom-control-indicator"></span>
+            </label>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+</div>
+

@@ -1,0 +1,30 @@
+<table class="table table-sm table-hover" id="data" style="margin-top:10px;">
+  <thead>
+    <tr>
+      <th scope="col">Imię</th>
+      <th scope="col">Nazwisko</th>
+      <th scope="col">Stanowisko</th>
+      <th scope="col" width="75px">Operacje</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for osoba in kontrahent.osoba_set.all %}
+    <tr>
+      <td><a href="{% url 'escrm:osoba-detail' osoba.pk %}">{{ osoba.imie }}</a></td>
+      <td><a href="{% url 'escrm:osoba-detail' osoba.pk %}">{{ osoba.nazwisko }}</a></td>
+      <td>{{ osoba.stanowisko }}</td>
+      <td>
+        <a href="#" class="btn btn-link btn-sm edit-buttons js-get-update-osoba" data-pk="{{ osoba.pk }}" data-url="{% url 'escrm:osoba-update-get' %}">
+          <i class="fas fa-edit"></i>
+        </a>
+        <form action="{%  url 'escrm:osoba-delete' osoba.pk %}" method="post" class="form-inline">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-link btn-sm confirm1 edit-buttons" style="cursor:pointer">
+            <i class="far fa-trash-alt"></i>
+          </button>
+        </form>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

@@ -1,0 +1,48 @@
+{% extends "common/basic.html" %}
+
+{% block content %}
+<div class="login-container">
+<div class="login-box">
+<div class="login-box-logo">
+    {% load static %}
+    <img src="{% static "escrm/images/logo-energy-solution.png" %}" width="96" height="33" alt="">
+</div>
+<div class="login-box-form">
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{% endif %}
+
+{% if next %}
+    {% if user.is_authenticated %}
+    <p>Your account doesn't have access to this page. To proceed,
+    please login with an account that has access.</p>
+    {% else %}
+    <p>Please login to see this page.</p>
+    {% endif %}
+{% endif %}
+
+<form method="post" action="{% url 'login' %}">
+{% csrf_token %}
+<table>
+<tr>
+    <td>{{ form.username.label_tag }}</td>
+    <td>{{ form.username }}</td>
+</tr>
+<tr>
+    <td>{{ form.password.label_tag }}</td>
+    <td>{{ form.password }}</td>
+</tr>
+    <tr>
+        <td colspan="2" class="login-button-row"><input type="submit" value="Zaloguj" /></td>
+    </tr>
+</table>
+
+
+<input type="hidden" name="next" value="{{ next }}" />
+</form>
+</div>
+{# Assumes you setup the password_reset view in your URLconf #}
+<p><a href="{% url 'password_reset' %}">Nie pamiętasz hasła ?</a></p>
+</div>
+</div>
+{% endblock %}

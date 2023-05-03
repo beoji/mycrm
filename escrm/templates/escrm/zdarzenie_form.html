@@ -1,0 +1,49 @@
+{% extends "escrm/zdarzenie_list.html" %}
+{% load widget_tweaks %}
+{% block breadcrumbs %}
+    {{ block.super }} / Nowe zdarzenie CRM
+{% endblock %}
+
+
+{% block content %}
+    {% block content-header %}
+    <h2>Dane zdarzenia</h2>
+{% endblock %}
+<div class="container-tables-crm">
+<form action="" method="post">
+    {% csrf_token %}
+<div class="container">
+    <div class="row">
+      <div class="col-sm-1"></div>
+    {% for hidden in form.hidden_fields %}
+          {{ hidden }}
+    {% endfor %}
+      <div class="col-sm-5">
+        {% for field in form.visible_fields %}
+            {% if forloop.counter == 4 %}
+            </div>
+                <div class="col-sm-1"></div>
+            <div class="col-sm-5">
+            {% endif %}
+             <div class="form-group row">
+                <label for="{{ field.label_for }}">{{ field.label }}</label>
+                {% render_field field class="form-control" %}
+                {% for error in field.errors %}
+                  <small class="form-text text-muted">
+                    {{ error }}
+                  </small>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+    </div>
+    <div class="submit-row">
+        <a class="btn btn-light" href="{{ next }}">Anuluj</a>
+        <input type="submit" class="btn btn-primary" value="Zapisz" style="cursor:pointer;" />
+    </div>
+</div>
+</form>
+</div>
+
+{%  endblock %}
+

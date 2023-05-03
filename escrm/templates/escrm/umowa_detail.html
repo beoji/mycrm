@@ -1,0 +1,345 @@
+{% extends "escrm/umowa_list.html" %}
+
+{% block breadcrumbs %}
+  {{ block.super }} / Umowa - {{ umowa.temat }}
+{% endblock %}
+
+{% block content %}
+
+<div class="container-tables-crm">
+  <div class="row">
+    <!-- Lewa strona umowy-->
+    <div class="col-sm-6">
+      <ul class="display-static-list">
+        <li class="static-list-field-label">
+          temat</li>
+        <li class="static-list-field-value">
+          {{ umowa.temat }}</li>
+        <li class="static-list-field-label">
+          produkt</li>
+        <li class="static-list-field-value">
+          {{ umowa.produkt }}</li>
+        <li class="static-list-field-label">
+          termin ważności</li>
+        <li class="static-list-field-value">
+          {{ umowa.termin_waznosci|date }}</li>
+        <li class="static-list-field-label">
+          wartość</li>
+        <li class="static-list-field-value">
+          {{ umowa.wartosc }} {{ umowa.waluta }}</li>
+        <li class="static-list-field-label">
+          status</li>
+        <li class="static-list-field-value">
+          {{ umowa.status.nazwa }}</li>
+        <li class="static-list-field-label">
+          akceptacja</li>
+        <li class="static-list-field-value">
+          {{ umowa.akceptacja }}</li>
+        <li class="static-list-field-label">
+          data sporządzenia</li>
+        <li class="static-list-field-value">
+          {{ umowa.data_sporzadzenia|date }}</li>
+      </ul>
+    </div>
+    <div class="col-sm-6">
+      <!-- Pudełko z listą płatności-->
+      <section id="accordion">
+      <!-- Bardzo ważna pętla for lecąca po wszystkich płatnościach-->
+      {% for platnosc in platnosc_set %}
+      <div class="card card-payment list-group">
+        <!-- Belka tytułowa kazdego elementu z listy-->
+        <div class="card-header"
+             id="headingOne"
+             data-toggle="collapse"
+             data-target="#{{ platnosc.pk }}_id_pay"
+             aria-expanded="true"
+             aria-controls="collapseOne">
+          <span class="card-title">
+          <!-- Data na belce-->
+          <span class="btn btn-link card-label-title">{{ platnosc.termin|date:"d.m.Y" }}</span>
+          <!-- Temat na belce-->
+          <button class="btn btn-link" >
+           {{ platnosc.umowa.temat }}
+          </button>
+          <!-- Kwota i status na belce-->
+          <span class="btn btn-link card-worth float-right">
+          {% if platnosc.is_done %}
+            <span class="badge cart-badge badge-pill badge-posted">
+              Zaksięgowano
+            </span>
+          {% endif %}
+          {% if platnosc.is_delayed %}
+            <span class="badge cart-badge badge-pill badge-delayed">
+              Opóźnienie
+            </span>
+          {% endif %}
+          {% if not platnosc.is_delayed and not platnosc.is_done %}
+            <span class="badge cart-badge badge-pill badge-waiting">
+              Oczekiwanie
+            </span>
+          {% endif %}
+              &nbsp;&nbsp;{{ platnosc.kwota }} <span>{{ platnosc.umowa.waluta }}</span></span>
+          </span>
+        </div>
+        <!-- Zawartość każdej z belek -->
+        <div id="{{ platnosc.pk }}_id_pay"
+             class="collapse card-body-container"
+             aria-labelledby="headingOne"
+             data-parent="#accordion">
+          <div class="card-body card-payment-body container-fluid">
+
+            <div class="row">
+              <div class="col-sm-7">
+                <ul class="collapse-list">
+
+                  <li class="payment-property row">
+                    <div class="col-sm-7">
+                      Kwota
+                    </div>
+                    <div class="col-sm-5">
+                      <span class="payment-property-value float-right">
+                        {{ platnosc.kwota }} {{ platnosc.umowa.waluta }}
+                      </span>
+                    </div>
+                  </li>
+
+                  <li class="payment-property row">
+                    <div class="col-sm-7">
+                      Kwota zaksięgowana
+                    </div>
+                    <div class="col-sm-5">
+                      <span class="payment-property-value float-right">
+                        {{ platnosc.kwota_zaksiegowana }} {{ platnosc.umowa.waluta }}
+                      </span>
+                    </div>
+                  </li>
+
+                  <li class="payment-property row">
+                    <div class="col-sm-7">
+                      Data zaksięgowania
+                    </div>
+                    <div class="col-sm-5">
+                      <span class="payment-property-value float-right">
+                        28.02.2018
+                      </span>
+                    </div>
+                  </li>
+
+                  <li class="payment-property row">
+                    <div class="col-sm-7">
+                      Liczba dni do zapłaty
+                    </div>
+                    <div class="col-sm-5">
+                      <span class="payment-property-value float-right">
+                        {{ platnosc.how_many_days_left }}
+                      </span>
+                    </div>
+                  </li>
+
+                </ul>
+              </div>
+
+              <div class="col-sm-5">
+              </div>
+
+            </div>
+
+            <div class="row">
+              <div class="col-sm-7">
+                <div class="row">
+                  <span class="last-modification col-sm-6">
+                    Ostatnia modyfikacja
+                  </span>
+                  <span class="last-modification-value col-sm-6">
+                    <span class="float-right">18 styczen 2018</span>
+                  </span>
+                </div>
+              </div>
+
+              <div class="col-sm-5">
+                <a href="{% url 'escrm:platnosc-update' platnosc.pk %}" class="badge badge-danger float-right payment-edit-button">Edytuj</a>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {% endfor %}
+      </section>
+      <!-- Koniec pudełka płatności-->
+
+    </div>
+  </div>
+<!-- lista plików dla umowy -->
+<div class="row" style="border-top: 1px solid #ddd; padding-top: 10px;">
+    <div class="col-sm-8">
+        <div class="d-flex flex-column">
+         <h4>Dołączone pliki</h4>
+                {%  for dokument in umowa.dokument_set.all %}
+                    <div class="p-2">
+                    <i class="fas fa-file"></i>
+                    &nbsp; <a href="{% url 'escrm:dokument-download' dokument.pk %}">{{ dokument.tytul_dokumentu }}</a>
+                    {{ dokument.uzytkownik.user.first_name }} {{ dokument.uzytkownik.user.last_name }},
+                    {{ dokument.data_dodania|date:"Y-m-d H:m:s" }}
+                    &nbsp;
+                    <form action="{%  url 'escrm:dokument-delete' dokument.pk %}" method="post" class="form-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm confirm" style="cursor:pointer;">
+                        <i class="far fa-trash-alt"></i>
+                        </button>
+                    </form>
+                    </div>
+                {% endfor %}
+
+
+            <div class="p-2">
+                <span class="static-list-field-label">
+                  <a id="create-dokument-button" href="#" data-toggle="modal" data-target="#dodaj-dokument-modal"><i class="fas fa-plus"></i> dodaj dokument</a>
+                  <!--modal view-->
+                </span>
+            </div>
+        <div class="p-2">
+            <progress></progress>
+        </div>
+     </div>
+    </div>
+</div>
+
+  <br><br>
+  <div class="submit-row float-right">
+    <a class="btn btn-outline-primary btn-sm" href="{{ next }}">
+      <i class="fas fa-angle-left"></i>
+      powrót
+    </a>
+    <form action="{%  url 'escrm:umowa-delete' umowa.pk %}" method="post" class="form-inline">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-danger btn-sm confirm2" style="cursor:pointer">
+        usuń
+        <i class="far fa-trash-alt"></i>
+      </button>
+    </form>
+  </div>
+  <br>
+
+</div>
+{% endblock content %}
+{% block modal %}
+{{ block.super }}
+
+<div id="dodaj-dokument">
+  {% include 'escrm/dokument/dokument_create_modal.html' %}
+</div>
+
+
+{% endblock modal %}
+{% block javascript %}
+
+<script>
+
+$(function(){
+    $('progress').hide();
+  setupAjax();
+
+  $('.confirm').on('click', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć wybrany dokument ?");
+      if (conf == true) {
+        return conf;
+      } else {
+        e.preventDefault();
+      }
+  });
+
+  $('.confirm2').on('click', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć umowę ?");
+      if (conf == true) {
+        return conf;
+      } else {
+        e.preventDefault();
+      }
+  });
+
+  $(':file').on('change', function() {
+    var file = this.files[0];
+    if (file.size > 20480000) {
+        document.getElementById("id_nazwa_pliku").value = "";
+        alert('Dopuszczalna wielkość pliku to 20Mb')
+    }
+  });
+
+  $(document).on('click', '#create-dokument-button', function(e){
+
+  });
+
+  /*$(document).on('click', '#js-submit-create-dokument', function(e){
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        tytul_dokumentu: $('#id_tytul_dokumentu').val(),
+        nazwa_pliku: $('#id_nazwa_pliku').val(),
+        typ: $('#id_typ').val(),
+        csrfmiddlewaretoken: $('#osoba-form-create input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data){
+        console.log(data);
+        var modal_div = $('#osoba-create-modal');
+        var modal = modal_div.html();
+        modal_div.empty();
+        modal_div.html(modal);
+      }
+    })
+  });*/
+
+  $(document).on('click', '#js-submit-create-dokument', function(e){
+      $('progress').show();
+      var data = new FormData();
+        data.append("nazwa_pliku", $("#id_nazwa_pliku")[0].files[0]);
+        data.append("typ", $("#id_typ").val());
+        data.append("tytul_dokumentu",$("#id_tytul_dokumentu").val());
+        data.append("csrfmiddlewaretoken", $('#dokument-form-create input[name=csrfmiddlewaretoken]').val());
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'post',
+      //dataType: 'json',
+      data: data,
+        cache: false,
+        contentType: false,
+        processData: false,
+        // Custom XMLHttpRequest
+        xhr: function() {
+            var myXhr = $.ajaxSettings.xhr();
+            if (myXhr.upload) {
+                // For handling the progress of the upload
+                myXhr.upload.addEventListener('progress', function(e) {
+                    if (e.lengthComputable) {
+                        $('progress').attr({
+                            value: e.loaded,
+                            max: e.total,
+                        });
+                    }
+                } , false);
+            }
+            return myXhr;
+        },
+        success:function(response) {
+              location.reload(true);
+
+              //do something with 'response'
+             }
+      /*success: function(data){
+          document.getElementById("id_nazwa_pliku").value = "";
+          document.getElementById("id_tytul_dokumentu").value = "";
+        console.log(data);
+        var modal_div = $('#dokument-create-modal');
+        var modal = modal_div.html();
+        modal_div.empty();
+        modal_div.html(modal);
+      }*/
+    })
+  });
+})
+
+</script>
+{% endblock javascript%}

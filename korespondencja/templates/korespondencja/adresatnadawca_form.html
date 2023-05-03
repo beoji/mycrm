@@ -1,0 +1,108 @@
+{% extends "base_generic.html" %}
+{% load widget_tweaks %}
+
+{% block content-header %}
+
+    <h2>Edycja adresata/nadawcy {{ object.nazwa }}</h2>
+    <div class="h-divider"></div>
+
+{% endblock content-header %}
+
+{% block content %}
+
+    <form method="POST" action="" autocomplete="off" class="container">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group row">
+            <label for="{{ field.id_for_label }}" class="col-form-label col-sm-2">{{ field.label }}:</label>
+                {% render_field field class="form-control col-sm-4" %}
+                {% for error in field.errors %}
+                    <small class="text-muted">
+                        {{ error }}
+                    </small>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="row">
+            <div class="col-sm-3 offset-sm-10">
+                <a class="btn btn-light" href="{% url 'korespondencja:korespondencja-list' %}">Anuluj</a>
+                <input type="submit" class="btn btn-primary" value="Zapisz" style="cursor:pointer;" />
+            </div>
+        </div>
+
+    </form>
+
+    <script>
+    $(function(){
+
+        $('#id_nazwa').on('input', function(e){
+
+                var input = $(this).val();
+                var helper = $('#helper');
+                var options = helper[0].options;
+
+                for (var i = 0; i < options.length; i++){
+                    if (options[i].value == input){
+                        $('#id_miasto').val(options[i].getAttribute('city'));
+                        $('#id_kod_pocztowy').val(options[i].getAttribute('post-code'));
+                        $('#id_ulica').val(options[i].getAttribute('street'));
+                        $('#id_miasto').attr('readonly', true);
+                        $('#id_kod_pocztowy').attr('readonly', true);
+                        $('#id_ulica').attr('readonly', true);
+                        $('#text-contact').hide();
+                        return;
+                    }
+                }
+
+                if (input.length > 0){
+                    $.ajax({
+                        url: '{% url 'korespondencja:personhelper' %}',
+                        type: 'get',
+                        dataType: 'json',
+                        data: {
+                            'input': input
+                        },
+                        success: function(msg) {
+                            var response = JSON.parse(msg.results);
+                            console.log(response);
+                            if (response.length > 0) {
+                                helper.empty();
+                                for (var i = 0; i < response.length; i++) {
+                                    helper.append('<option value="' +
+                                        response[i].fields.nazwa +
+                                        '" city="' + response[i].fields.miasto +
+                                        '" post-code="' + response[i].fields.kod_pocztowy +
+                                        '" street="' + response[i].fields.ulica +
+                                        '">');
+                                }
+                            } else {
+                                helper.empty();
+                                $('#id_miasto').attr('readonly', false);
+                                $('#id_kod_pocztowy').attr('readonly', false);
+                                $('#id_ulica').attr('readonly', false);
+                                $('#id_miasto').val('');
+                                $('#id_kod_pocztowy').val('');
+                                $('#id_ulica').val('');
+                                $('#text-contact').show();
+                            }
+                        }
+                    })
+                } else {
+                    helper.empty();
+                    $('#id_miasto').val('');
+                    $('#id_kod_pocztowy').val('');
+                    $('#id_ulica').val('');
+                    $('#id_miasto').attr('readonly', false);
+                    $('#id_kod_pocztowy').attr('readonly', false);
+                    $('#id_ulica').attr('readonly', false);
+                    $('#text-contact').show();
+                }
+            })
+    })
+
+
+    </script>
+
+{% endblock %}

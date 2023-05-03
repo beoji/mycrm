@@ -1,0 +1,95 @@
+{% load widget_tweaks %}
+<div class="modal fade"
+     id="kontrahent-dane-modal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="lista_kontrahentow_modal_tytul">
+          Pobierz dane
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="container">
+        <table class="table table-striped table-sm">
+          <thead>
+            <tr>
+              <th>Nazwa kontrahenta</th>
+              <th>Miasto</th>
+              <th>Kod</th>
+              <th>Ulica</th>
+              <th>#</th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for kontrahent in kontrahent_list %}
+            <tr>
+              <td>{{ kontrahent.nazwa_krotka }}</td>
+              {% for adres in kontrahent.adreskontrahent_set.all %}
+                {% if adres.czy_domyslny == True %}
+                  <td>{{ adres.miasto }}</td>
+                  <td>{{ adres.kod_pocztowy }}</td>
+                  <td>{{ adres.ulica }}</td>
+                  <td><a class="btn btn-sm btn-light btn-get" id="get_{{ adres.pk }}">Pobierz</a></td>
+                {% endif %}
+              {% endfor %}
+            </tr>
+          {% empty %}
+            Brak kontrahentów.
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+$(function(){
+  $('.btn-get').on('click', function(e){
+    $('#kontrahent-dane-modal').modal('hide');
+    var row = $(this).parent();
+    var ulica = row.prev().html();
+    var kod_pocztowy = row.prev().prev().html();
+    var miasto = row.prev().prev().prev().html();
+    var nazwa = row.prev().prev().prev().prev().html();
+    console.log(nazwa + ' ' + miasto + ' ' + kod_pocztowy + ' ' + ulica);
+    $('#id_miasto').val(miasto);
+    $('#id_kod_pocztowy').val(kod_pocztowy);
+    $('#id_ulica').val(ulica);
+    $('#id_nazwa').val(nazwa);
+    $.ajax({
+      url: '{% url 'korespondencja:personhelper' %}',
+      type: 'get',
+      dataType: 'json',
+      data: {
+          'input': nazwa,
+      },
+      success: function(msg){
+        var response = JSON.parse(msg.results);
+        console.log(response);
+        if (response.length > 0) {
+          $('#id_miasto').attr('readonly', true);
+          $('#id_kod_pocztowy').attr('readonly', true);
+          $('#id_ulica').attr('readonly', true);
+          $('#text-contact').css('opacity', '0');
+        } else {
+          $('#id_miasto').attr('readonly', false);
+          $('#id_kod_pocztowy').attr('readonly', false);
+          $('#id_ulica').attr('readonly', false);
+          $('#text-contact').css('opacity', '1');
+        }
+      }
+    })
+  })
+})
+</script>

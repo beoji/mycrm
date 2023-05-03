@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    {% include 'snippets/head.html' %}
+
+    <body>
+
+    {% include 'snippets/nav.html' %}
+
+    {% include 'snippets/subnav.html' %}
+    {% include 'snippets/msg.html' %}
+
+    <div class="container-fluid dashboard-container">
+        <div class="breadcrumbs">
+            {% block breadcrumbs %}<a href="{% url "escrm:escrm-dashboard" %}">CRM</a>{% endblock %}
+        </div>
+            {% block content %}
+            {% endblock %}
+    </div>
+
+    {% include 'snippets/scr.html' %}
+
+    {% block javascript %}
+    {% endblock %}
+
+    </body>
+    {% block modal %}
+    {% endblock %}
+</html>

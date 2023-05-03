@@ -1,0 +1,47 @@
+{% load widget_tweaks %}
+
+<h3>Krok 2 - płatność</h3><br>
+
+{% for hidden in form_platnosc.hidden_fields %}
+  {{ hidden }}
+{% endfor %}
+<div class="row">
+  <div class="col-sm-4">
+    <div class="form-check">
+      {{ form_platnosc.type }}
+    </div>
+  </div>
+  <div class="col-sm-8">
+    <div class="row">
+      <label for="{{ form_platnosc.once_date.id_for_label }}" class="col-sm-6 col-form-label">{{ form_platnosc.once_date.label }}:</label>
+      {% render_field form_platnosc.once_date class="form-control col-sm-6" %}
+    </div>
+    <div class="row">
+      <label for="{{ form_platnosc.once_date.id_for_label }}" class="col-sm-6 col-form-label">{{ form_platnosc.cyclic_end_date.label }}:</label>
+      {% render_field form_platnosc.cyclic_end_date class="form-control col-sm-6" %}
+    </div>
+
+  </div>
+</div>
+<div id="only-cyclic-div">
+  {% for choice in form_platnosc.cyclic_type %}
+    <div class="form-group row" style="margin-bottom:5px">
+      <div class="col-sm-4">
+        <span class="radio">{{ choice.tag }}</span>
+        {{ choice.choice_label }}
+      </div>
+      {% if forloop.counter == 3 %}
+        <div class="col-sm-8">
+          {% render_field form_platnosc.cyclic_day class="form-control form-control-sm" %}
+        </div>
+      {% endif %}
+      {% if forloop.counter == 4 %}
+        <div class="col-sm-8">
+          {% render_field form_platnosc.cyclic_date_start class="form-control form-control-sm" %}
+          {% render_field form_platnosc.cyclic_date_end class="form-control form-control-sm" %}
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>
+

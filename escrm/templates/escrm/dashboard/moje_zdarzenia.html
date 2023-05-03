@@ -1,0 +1,74 @@
+{% extends "dashboard_template.html" %}
+{% block breadcrumbs %}
+    {{ block.super }} / <a href="{% url 'escrm:opiekun-zdarzenia-list' %}">Moje zdarzenia</a>
+{% endblock %}
+{% block content-header %}
+    <h1>Lista zdarzeń</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container-tables-crm">
+<div class="submit-row float-right">
+    <!--<a class="btn btn-light" href="{% url 'escrm:zdarzenie-create' %}">Dodaj zdarzenie</a>-->
+</div>
+{% if lista_zdarzen %}
+    <table class="table table-sm" id="data">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Data zdarzenia</th>
+            <th scope="col">Temat</th>
+            <th scope="col">Id użytkownika</th>
+            <th scope="col">Typ</th>
+            <th scope="col">Kontrahent</th>
+            <th scope="col">Operacje</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for zdarzenie in lista_zdarzen %}
+            <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+                <td><a href="{% url 'escrm:zdarzenie-detail' zdarzenie.id_zdarzenia %}">{{ zdarzenie.data_zdarzenia|date:"Y M d" }}</a></td>
+                <td><a href="{% url 'escrm:zdarzenie-detail' zdarzenie.id_zdarzenia %}">{{ zdarzenie.temat }}</a></td>
+                <td><a href="{% url 'escrm:zdarzenie-detail' zdarzenie.id_zdarzenia %}">{{ zdarzenie.uzytkownik}}</a></td>
+                <td><a href="{% url 'escrm:zdarzenie-detail' zdarzenie.id_zdarzenia %}">{{ zdarzenie.typ }}</a></td>
+                <td><a href="{% url 'escrm:kontrahent-detail' zdarzenie.kontrahent_id %}">{{ zdarzenie.kontrahent}}</a></td>
+                <td>
+                  <!--<a class="btn btn-link btn-sm" href="{% url 'escrm:zdarzenie-update' zdarzenie.pk %}" style="padding: 0 0.5rem!important;">
+                    <i class="fas fa-edit"></i>
+                  </a>-->
+                  <form action="{%  url 'escrm:zdarzenie-delete' zdarzenie.pk %}" method="post" class="form-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-link btn-sm confirm" style="padding: 0 0.5rem!important;">
+                      <i class="far fa-trash-alt"></i>
+                    </button>
+                  </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Nie ma zdefiniowanych zdarzeń.</p>
+{% endif %}
+    </div>
+    <script>
+    $(document).ready(function() {
+        $('#confirm').on('click', function(e){
+            conf = confirm("Czy na pewno chcesz usunąć to zdarzenie?");
+            if (conf == true) {
+                return conf;
+            } else {
+                e.preventDefault();
+            }
+        });
+        $('#data').DataTable( {
+            "ordering": true,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Polish.json"
+            }
+        });
+        setSearchableColumns();
+    });
+    </script>
+{% endblock %}

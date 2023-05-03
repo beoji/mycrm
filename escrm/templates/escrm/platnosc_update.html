@@ -1,0 +1,47 @@
+{% extends 'base_generic.html' %}
+
+{% block breadcrumbs %}
+  {{ block.super }} / Umowa - {{ object.umowa.temat }} / Platnosc - {{ object.pk }} do {{ object.termin }}
+{% endblock %}
+
+{% block content %}
+{% load widget_tweaks %}
+
+<div class="container-fluid"></div>
+<form id="platnosc-update" method="post" action="" novalidate>
+  {% csrf_token %}
+  {% if form.non_field_errors %}
+    <div class="alert alert-danger" role="alert">
+      {% for error in form.non_field_errors %}
+        {{ error }}
+      {% endfor %}
+    </div>
+  {% endif %}
+  {% for field in form.visible_fields %}
+    <div class="form-group row">
+    <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">{{ field.label }}:</label>
+    {% if form.is_bound %}
+      {% if field.errors %}
+        {% render_field field class="form-control is-invalid col-sm-8" %}
+        {% for error in field.errors %}
+          <div class="col-sm-4"></div>
+          <div class="invalid-feedback">
+            {{ error }}
+          </div>
+        {% endfor %}
+      {% else %}
+        {% render_field field class="form-control is-valid col-sm-8" %}
+      {% endif %}
+    {% else %}
+      {% render_field field class="form-control col-sm-8" %}
+    {% endif %}
+
+    {% if field.help_text %}
+      <small class="form-text text-muted">{{ field.help_text }}</small>
+    {% endif %}
+    </div>
+  {% endfor %}
+  <button type="submit" class="btn btn-primary float-right">Potwierdź</button>
+</form>
+
+{% endblock content %}

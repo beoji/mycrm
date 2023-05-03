@@ -1,0 +1,145 @@
+{% extends "base_generic.html" %}
+
+{% block content-header %}
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-6">
+      <h1 class="module-header">Korespondencja</h1>
+    </div>
+    <div class="col-sm-6">
+      <a class="btn btn-sm btn-light float-right add-button" href="{% url 'korespondencja:korespondencja-create' %}?rodzaj=p">
+        Dodaj przychodzącą <i class="fas fa-download"></i>
+      </a>
+      <a class="btn btn-sm btn-light float-right add-button" href="{% url 'korespondencja:korespondencja-create' %}?rodzaj=w">
+        Dodaj wychodzącą <i class="fas fa-upload"></i>
+      </a>
+    </div>
+  </div>
+</div>
+
+{% endblock content-header %}
+
+{% block content %}
+
+{% if korespondencja_list %}
+  <table class="table table-sm" id="data">
+    <thead>
+      <tr>
+        <th scope="col">Nr</th>
+        <th scope="col">Temat</th>
+        <th scope="col">Nadawca/Odbiorca</th>
+        <th scope="col">Rodzaj</th>
+        <th scope="col">Data przyjścia/wyjścia</th>
+        <th scope="col">Operacje</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      {% include 'snippets/korespondencja_table.html' %}
+
+    </tbody>
+  </table>
+{% else %}
+  <p>Brak korespondencji do wyświetlenia.</p>
+{% endif %}
+
+<script>
+$(document).ready(function() {
+
+  $('.confirm').on('click', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć wybraną korespondencję?");
+    if (conf == true) {
+      return conf;
+    } else {
+      e.preventDefault();
+    }
+  });
+
+  var table = $('#data').DataTable({
+    "ordering": true,
+    "language": {
+      "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Polish.json"
+    },
+    "columns": [
+      null,
+      { "width": "35%"  },
+      null,
+      null,
+      null,
+      { "width": "75px"  },
+    ]
+  });
+
+  setSearchableColumns();
+
+  var adresy = '';
+  var html = '';
+  $.ajax({
+    url: '{% url 'korespondencja:getrecievers' %}',
+    type: 'get',
+    dataType: 'json',
+    success: function(data){
+      var parsedObj = JSON.parse(data.results);
+      for (var obj in parsedObj) {
+        adresy += '<option>' + parsedObj[obj].fields.nazwa + '</option>\n';
+      }
+      html = '<datalist id="adresaci">';
+      html += adresy;
+      html += '</datalist>';
+      var th = $('#search_Nadawca').parent();
+      th.append(html);
+    }
+  });
+
+  function getMailByDate(f, to){
+    $.ajax({
+      url: '{% url 'korespondencja:getmailbydate' %}',
+      type: 'get',
+      dataType: 'json',
+      data: {
+        date_from: f,
+        date_to: to,
+      },
+      success: function(msg){
+        $('#data > tbody').html(msg.results);
+      }
+    })
+  }
+
+  $('#search_Nadawca').replaceWith('<input list="adresaci" class="form-control form-control-sm" placeholder="Szukaj Nadawca/odbiorca" id="search_Nadawca"/>');
+  $(document).on('input', '#search_Nadawca', function(e){
+    table.column(2).search(this.value).draw();
+  });
+
+  var rodzaj = '<input id="search_Rodzaj" list="rodzaj" placeholder="Szukaj Rodzaj" class="form-control form-control-sm"><datalist id="rodzaj"><option>Przychodząca</option><option>Wychodząca</option></datalist>';
+  $('#search_Rodzaj').replaceWith(rodzaj);
+  $(document).on('input', '#search_Rodzaj', function(e){
+    table.column(3).search(this.value).draw();
+  });
+
+  var data = '<div class="form-row"><div class="col"><input placeholder=" " type="date" id="min-date" class="form-control form-control-sm"/></div>';
+  data += '<div class="col"><input type="date" placeholder=" " id="max-date" class="form-control form-control-sm"/></div></div>';
+  var th = $('#search_Data').parent();
+  $('#search_Data').remove();
+  th.append(data);
+
+  var od_ = 'null';
+  var do_ = 'null';
+
+  $(document).on('input', '#min-date', function(e){
+    od_ = this.value;
+    getMailByDate(od_, do_);
+  });
+
+  $(document).on('input', '#max-date', function(e){
+    do_ = this.value;
+    getMailByDate(od_, do_);
+  });
+
+
+});
+
+</script>
+
+{% endblock %}

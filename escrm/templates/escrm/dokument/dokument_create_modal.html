@@ -1,0 +1,58 @@
+{% load widget_tweaks %}
+<div class="modal fade"
+     id="dodaj-dokument-modal"
+     tabindex="-1"
+     role="dialog"
+     aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+         Dodaj plik
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="" method="post" id="dokument-form-create" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% for hidden in form_dokument.hidden_fields %}
+          {{ hidden }}
+        {% endfor %}
+        <div class="modal-body">
+            {% for field in form_dokument.visible_fields %}
+          <div class="form-group row">
+                <label for="{{ field.id_for_label }}" class="col-sm-2 col-form-label">{{ field.label }}</label>
+          <div class="col-sm-10">
+                {% render_field field class="form-control" %}
+          </div>
+                {% for error in field.errors %}
+                     <div class="form-group row">
+                     <div class="col-sm-10">
+                  <small class="form-text text-muted">
+                    {{ error }}
+                  </small>
+                     </div>
+                     </div>
+                {% endfor %}
+            </div>
+      {% endfor %}
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+          <button type="button" class="btn btn-info" data-dismiss="modal"
+                  id="js-submit-create-dokument" data-url="
+                    {%  if form_dokument.typ.value == 'oferta' %}
+                        {% url 'escrm:dokument-add' oferta.pk  %}
+                    {% elif form_dokument.typ.value == 'umowa' %}
+                        {% url 'escrm:dokument-add' umowa.pk  %}
+                    {% endif %}
+
+                ">Zapisz</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

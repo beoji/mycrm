@@ -1,0 +1,647 @@
+html, body {
+    /*height: 90%;*/
+    min-height: 80%;
+}
+
+body {
+    background-color: #fff;
+    font-family: "Open Sans";
+    color: #222;
+}
+
+h2 {
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+input .btn, button {
+    cursor: pointer !important;
+}
+
+.form-inline {
+    display: inline-block;
+}
+
+.reset-denied-container {
+    width: 80%;
+    margin: 100px auto;
+}
+
+.main-container {
+    width: 90%;
+    margin: 20px auto;
+    min-height: 100%;
+    padding: 10px 40px 40px 40px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 4px #aaaaaa;
+}
+
+.sub-main-menu {
+    height: 40px;
+    background-color: #004D40;
+    background-color: #1C3548;
+}
+
+.sub-main-menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sub-main-menu ul li {
+    display: inline;
+}
+
+.message-container {
+    height: 46px;
+    width: 90%;
+    margin: 20px auto;
+}
+
+.messages {
+    list-style-type: none;
+    padding: 0 40px;
+    margin-bottom: 0;
+}
+
+.messages li {
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    margin: 0;
+}
+
+.messages .success {
+    background-color: #8BC34A;
+    color: #fff;
+}
+
+.top-menu {
+    background-color: #009688;
+    background-color: #95afc0;
+    color: #fff;
+}
+
+.page-header {
+    border-left: 8px solid #F78858;
+    border-bottom: 1px solid #aaa;
+    width: 100%;
+    padding: 7px 0px 7px 7px;
+}
+
+.top-menu a, .sub-main-menu a {
+    color: #fff;
+}
+
+.top-menu .nav-link:hover {
+    color: #eb4d4b;
+}
+
+.top-menu .active {
+    color: #eb4d4b;
+}
+
+.sub-main-menu .nav-item:hover {
+    background-color: #95afc0;
+}
+
+.login-container {
+    display: flex;
+    margin: 0 auto;
+    width: 500px;
+    height: 500px;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container table td {
+    padding: 5px 10px;
+}
+
+.login-container table td.login-button-row {
+    text-align: center;
+    padding-top: 30px;
+}
+
+.login-box {
+    /*width: 500px;
+    height: 300px;*/
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    padding: 20px 50px;
+}
+
+.login-box-logo {
+    text-align: center;
+    padding-bottom: 10px;
+}
+
+.form-group {
+    font-size: 14px;
+}
+
+/*Ajax helper*/
+#helper {
+}
+
+.display-static-list {
+    list-style-type: none;
+}
+
+.static-list-field-label {
+    color: #aaaaaa;
+    font-style: italic;
+}
+
+.static-list-field-value {
+    font-size: 1.25em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    margin-top: -10px;
+}
+
+.static-table-box {
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.display-static-table td {
+
+}
+
+.static-table-field-label {
+    padding: 10px 30px 10px 0;
+}
+
+.static-table-field-value {
+    font-weight: bold;
+
+}
+
+.h-divider {
+    margin-top: 5px;
+    margin-bottom: 15px;
+    height: 1px;
+    width: 100%;
+    border-top: 1px solid #ccc;
+}
+
+.help-text ul {
+    list-style-type: none;
+    color: #8BC34A;
+    font-style: italic;
+    font-size: 0.825em;
+    padding-left: 5px;
+}
+
+.form-error {
+    color: #cc3333;
+    font-weight: 700;
+}
+
+.submit-form {
+    padding-top: 10px;
+}
+
+.submit-row {
+    margin-bottom: 8px;
+}
+
+.custom-control {
+    display: inline-block !important;
+    min-height: 0 !important;
+    padding-left: 0 !important;
+    margin-right: 0 !important;
+    left: 10px;
+}
+
+td label {
+    margin-bottom: 1rem !important;
+}
+
+.edit-buttons {
+    padding: 0.05rem 0.5rem;
+    font-size: 0.7rem;
+}
+
+/* style dla boxów w dashboardach */
+
+.dashboard-container {
+    width: 90%;
+    margin: 20px auto;
+}
+
+.dashboard-boxes-container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.dashboard-container:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.dashboard-box {
+    margin: 20px;
+    min-width: 300px;
+    background-color: #eee;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 4px #aaaaaa;
+    float: left;
+    display: inline-block;
+    border-radius: 3px;
+}
+
+.dashboard-box:after {
+    content: "";
+    clear: both;
+    display: inline-block;
+}
+
+.dashboard-box-title {
+    width: 100%;
+    color: #333;
+    line-height: 30px;
+    padding: 5px 10px;
+}
+
+.dashboard-box-title h4 {
+    margin-bottom: 0;
+    border-radius: 3px;
+    display: inline-block;
+    padding-right: 20px;
+}
+
+.dashboard-box-content {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 3px;
+    margin: 5px;
+}
+
+/* koniec styli dla boxów dashboard */
+
+.fa-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    color: #888;
+}
+
+.breadcrumbs {
+    height: 60px;
+    line-height: 60px;
+    font-size: 1.25em;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 8px;
+}
+
+.container-tables-crm {
+    width: 100%;
+    margin: 10px auto;
+    min-height: 100%;
+    padding: 40px 40px 40px 40px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    box-shadow: 2px 2px 4px #aaaaaa;
+}
+
+.module-header {
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    font-size: 2.5rem;
+}
+
+.add-button {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+}
+
+table input {
+    width: -webkit-fill-available;
+    width: -moz-available;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+#min-date, #max-date {
+    width: 140px !important;
+    display: inline-block;
+    position: absolute;
+    bottom: -1px;
+}
+
+#max-date {
+    left: 60px;
+}
+
+/* style dla formularza umowy */
+#only-cyclic-div {
+    display: none;
+}
+
+#id_cyclic_date_start, #id_cyclic_date_end, #id_cyclic_day {
+    width: 80px;
+    display: inline;
+}
+
+#only-cyclic-div {
+    margin-left: 65px;
+}
+
+#payment-div {
+    display: none;
+}
+
+#agreement-form input, #agreement-form select {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+#accept {
+    display: none;
+}
+
+#id_type {
+    list-style: none;
+    margin-top: 7px;
+}
+
+#id_type li {
+    padding-bottom: 5px;
+}
+
+/*style UMOWA lista-platnosci*/
+.collapse-list {
+    list-style: none;
+    padding: 0;
+}
+
+.payment-property-value, .payment-property {
+    font-size: 13px;
+    color: #eee;
+}
+
+.payment-property-value {
+    margin-left: 15px;
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.card-payment {
+    border-bottom: 0;
+    border-top: 0;
+    border: 0 !important;
+}
+
+.card-payment > .card-header {
+    padding: 0px !important;
+}
+
+.card-payment > .card-header > .card-title > button, .card-title > span, .card-worth {
+    font-size: 13px;
+
+}
+
+.cart-badge {
+    font-size: 12px !important;
+    font-weight: 600 !important;
+}
+
+.badge-waiting {
+    background-color: #41980730;
+    color: #ffffff;
+}
+
+.badge-delayed {
+    color: #111;
+    background-color: #ffbf00ba;
+}
+
+.badge-posted {
+    background-color: #5ecc2eb0;
+    color: #111;
+}
+
+.card-title > .btn-link:hover {
+    text-decoration: none !important;
+}
+
+.card-title > span > span {
+    font-weight: normal !important;
+}
+
+.card-label-title {
+    color: black !important;
+    width: 15%;
+}
+
+.card-worth {
+    font-weight: 800;
+    color: black !important;
+}
+
+.card-payment-body {
+    padding: 10px 20px 10px !important;
+    background: #444 !important;
+    border-left: 1px solid #444;
+    -webkit-box-shadow: inset 0px 0px 15px -6px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: inset 0px 0px 15px -6px rgba(0, 0, 0, 0.75);
+    box-shadow: inset 0px 0px 15px -6px rgba(0, 0, 0, 0.75);
+}
+
+.card-payment-body > p {
+    color: #ddd !important;
+}
+
+.accordion:first-child {
+    border-top-width: 1px !important;
+    border-top-color: solid rgba(0, 0, 0, .125) !important;
+    border-top-style: solid !important;
+}
+
+#accordion {
+    border: 1px solid rgba(0, 0, 0, .125) !important;
+}
+
+.card-header {
+    border-bottom: 0 !important;
+}
+
+.last-modification, .last-modification-value {
+    display: table-cell; /* Brat wsparcia dla ie-8 */
+    vertical-align: middle;
+    font-weight: 200;
+    font-style: italic;
+    font-size: 12px;
+    color: #d5d5d5;
+}
+
+/*kalendarz platnosci*/
+#calendar-module {
+    font-size: 13px;
+    font-family: "Roboto Condensed";
+}
+#calendar-module .dropdown-toggle{
+    box-shadow: none!important;
+}
+.payment-row {
+    text-decoration: none !important;
+}
+
+#daily-header {
+    border: 1px solid #eee;
+    background: #ffffff;
+    font-weight: 600;
+}
+
+#calendar {
+    -webkit-box-shadow: inset 0px 0px 15px -6px rgba(0, 0, 0, 0.75);
+    -moz-box-shadow: inset 0px 0px 15px -6px rgba(0, 0, 0, 0.75);
+    box-shadow: inset 0px 0px 15px -6px rgba(0, 0, 0, 0.75);
+}
+
+#calendar-header {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.1px;
+    color: #333;
+}
+
+#calendar-header a {
+    display: block;
+    padding-left: 15px;
+    padding-right: 15px;
+    background: #eee;
+    position: relative;
+    color: #2D4659;
+    font-size: 22px;
+}
+#calendar-header a:hover {
+    background: #e1e1e1;
+    color: #1C3548;
+}
+
+#calendar-header, #calendar-header a:hover {
+    backgraound: #ccc;
+}
+
+#calendar-header i {
+    padding-left: 20px;
+    padding-right: 20px;
+    display: inline-block;
+}
+#column-list{
+    transition: all 1s ease;
+}
+#calendar, #week, .days {
+    border: none;
+}
+
+#week {
+    height: calc(100vh / 5.91);
+}
+
+.badge-row {
+    font-size: 13px;
+    font-family: "Open Sans";
+}
+
+.amount, .done {
+    letter-spacing: -0.2px;
+    font-weight: 600;
+    font-size: 11px;
+}
+
+.done {
+    color: #eee;
+    background-color: #5ecc2eb0;
+}
+
+.amount {
+    color: #111;
+    background-color: #FFFF19;
+}
+
+.days > a, expander {
+    width: 100%;
+    height: 100%;
+}
+
+.expander {
+    padding: 0 !important;
+}
+
+#clicked-day-num {
+    color: #FF530D;
+    text-decoration: underline;
+}
+
+.days:hover {
+    background-color: #f5f5f5;
+}
+
+.days {
+    background: #fff;
+    vertical-align: top;
+    text-align: left;
+    width: 14.25%;
+    box-sizing: border-box;
+    border-right: #e0e0e0 1px solid;
+    border-bottom: #e0e0e0 1px solid;
+    transition: 50ms;
+}
+
+.days > .platnosc {
+    font-size: 12px;
+}
+
+.days > a:hover {
+    text-decoration: underline;
+}
+
+.days > a,
+.day-of-week {
+    display: block;
+    color: #757575;
+    line-height: 22px;
+    font-family: "Roboto";
+    font-size: 14px;
+    font-weight: 500;
+    font-style: italic;
+    letter-spacing: -0.1px;
+    text-decoration: none;
+}
+
+.clicked-day {
+    background-color: #f5f5f5;
+}
+
+.sunday {
+    background-color: #f9f9f9;
+}
+
+.day-of-week {
+    font-weight: 300;
+}
+
+.days > .container-fluid > a > .row {
+
+}
+/*Lista patnosci*/
+#payment-list {
+    padding: 0 !important;
+}
+
+.pay-link {
+    padding: 0 !important;
+}
+#payment-list, .pay-link{
+    font-size: 13px!important;
+
+}

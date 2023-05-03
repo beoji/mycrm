@@ -1,0 +1,90 @@
+{% extends "base_generic.html" %}
+
+{% block content-header %}
+
+  <h1>Adresaci/Nadawcy</h1>
+
+{% endblock content-header %}
+
+{% block content %}
+
+{% if kontakt_list %}
+  <br>
+  <table class="table table-sm" id="data">
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nazwa</th>
+        <th scope="col">Miasto</th>
+        <th scope="col">Kod-pocztowy</th>
+        <th scope="col">Ulica</th>
+        <th scope="col">Operacje</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for kontakt in kontakt_list %}
+      <tr>
+        <th scope="row">{{ forloop.counter }}</th>
+        <td>
+          <a href="{% url 'korespondencja:kontakt-detail' kontakt.pk %}"
+             class="btn-link"
+             data-toggle="tooltip"
+             data-placement="right"
+             title="Adresat-nadawca">
+              {{ kontakt.nazwa }}
+          </a>
+        </td>
+        <td>{{ kontakt.miasto }}</td>
+        <td>{{ kontakt.kod_pocztowy }}</td>
+        <td>{{ kontakt.ulica }}</td>
+        <td>
+      <a class="btn btn-link" href="{% url 'korespondencja:kontakt-update' kontakt.pk %}" style="padding: 0 0.5rem!important;">
+        <i class="fas fa-edit"></i>
+      </a>
+      <form action="{%  url 'korespondencja:kontakt-delete' kontakt.pk %}" method="post" class="form-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-link confirm" style="padding: 0 0.5rem!important;"><i class="far fa-trash-alt"></i></button>
+      </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>Brak kontaktów do wyświetlenia.</p>
+  {% endif %}
+
+<script>
+
+$(document).ready(function() {
+  $('.confirm').on('click', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć wybrany kontakt?");
+    if (conf == true) {
+      return conf;
+    } else {
+      e.preventDefault();
+    }
+  });
+
+  $('#data').DataTable({
+    "ordering": true,
+    "language": {
+        "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Polish.json"
+    },
+    "columns": [
+      null,
+      { "width": "40%"  },
+      null,
+      null,
+      null,
+      { "width": "75px"  },
+    ]
+  });
+
+  setSearchableColumns();
+
+});
+
+</script>
+
+{% endblock %}

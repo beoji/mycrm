@@ -1,0 +1,26 @@
+<div class="dashboard-box">
+    <div class="dashboard-box-title">
+        <h4>Oferty</h4>
+        <div style="display:inline-block; float: right;">
+            <a href="{% url 'escrm:kontrahent-oferty' kontrahent.id_kontrahenta %}"><i class="fas fa-list fa-2x"></i></a>
+            <a href="{% url 'escrm:oferta-create' kontrahent.id_kontrahenta %}">
+            <i class="fas fa-plus-circle fa-2x" style="color: #218838"></i></a>
+        </div>
+    </div>
+    <div class="dashboard-box-content">
+    {% if oferty %}
+        <table class="table table-sm">
+        <tr>
+            <th>Temat</th>
+        </tr>
+            {% for oferta in oferty %}
+                <tr>
+                    <td><a href="{% url 'escrm:oferta-detail' pk=kontrahent.id_pk_oferty=oferta.pk %}">{{ oferta.temat }}</a></td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Aktualnie brak ofert</p>
+    {% endif %}
+    </div>
+</div>

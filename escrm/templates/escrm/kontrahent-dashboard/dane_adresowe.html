@@ -1,0 +1,18 @@
+<div class="dashboard-box">
+    <div class="dashboard-box-title">
+        <h4>Dane i kontakty</h4>
+    </div>
+    <div class="dashboard-box-content">
+    <ul class="display-static-list">
+      <li class="static-list-field-label">
+        nazwa skrócona kontrahenta,
+        <a href="{% url 'escrm:kontrahent-detail' kontrahent.pk %}">edycja</a>
+      </li>
+      <li class="static-list-field-value">{{ kontrahent.nazwa_krotka }}</li>
+      <li class="static-list-field-label">pełna nazwa kontrahenta</li>
+      <li class="static-list-field-value">{{ kontrahent.nazwa_dluga }}</li>
+      <li class="static-list-field-label">NIP</li>
+      <li class="static-list-field-value">{{ kontrahent.nip }}</li>
+    </ul>
+    </div>
+</div>

@@ -1,0 +1,105 @@
+{% extends "dashboard_template.html" %}
+{% block breadcrumbs %}
+    {{ block.super }} / {% if breadcrumb_name %}{{ breadcrumb_name }}{% else %}Lista kontrahentów{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container-tables-crm">
+<div class="submit-row">
+    <a class="btn btn-success" href="{% url 'escrm:kontrahent-create' %}"><i class="fas fa-plus"></i>&nbsp; Dodaj kontrahenta</a>
+</div>
+{% if lista_kontrahentow %}
+    <div class="table-responsive">
+    <table class="table table-sm" id="data" style="width: 100%;border-collapse:collapse!important;">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Nazwa krótka</th>
+            <th scope="col">Nazwa pełna</th>
+            <th scope="col">NIP</th>
+            <th scope="col">Opiekun</th>
+            <th scope="col">Operacje</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for kontrahent in lista_kontrahentow %}
+            <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+                <td><a href="{% url 'escrm:kontrahent-detail' kontrahent.id_kontrahenta %}">{{ kontrahent.nazwa_krotka }}</a></td>
+                <td><a href="{% url 'escrm:kontrahent-detail' kontrahent.id_kontrahenta %}">{{ kontrahent.nazwa_dluga }}</a></td>
+                <td><a href="{% url 'escrm:kontrahent-detail' kontrahent.id_kontrahenta %}">{{ kontrahent.nip }}</a></td>
+                <td>{%  if kontrahent.opiekun is not None %}
+                        {{ kontrahent.opiekun.user.first_name }} {{ kontrahent.opiekun.user.last_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </td>
+                <td>
+                 {%  if kontrahent.opiekun is None or kontrahent.opiekun != request.user.profil %}
+                        <a href="#" role="button" class="btn btn-small btn-secondary disabled" aria-disabled="true" style="padding: 0 0.5rem!important;">
+                                CRM
+                        </a>
+                 {% else %}
+                     <a href="{% url 'escrm:kontrahent-dashboard' kontrahent.pk %}" style="text-decoration: none">
+                        <button type="button" class="btn btn-small btn-success" data-toggle="tooltip" title="Przejdź do CRM" style="padding: 0 0.5rem!important;">CRM
+                        </button>
+                    </a>
+                {% endif %}
+                {%  if kontrahent.opiekun is None or request.user|has_group:"szef_dzialu_sprzedazy,prezes" %}
+                    <a class="btn btn-link btn-sm" data-toggle="tooltip" title="Edytuj kontrahenta" href="{% url 'escrm:kontrahent-update' kontrahent.pk %}" style="padding: 0 0.5rem!important;">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                {% else  %}
+                     <a class="btn btn-link btn-sm fa-disabled" data-toggle="tooltip" title="Edytuj kontrahenta" href="#" style="padding: 0 0.5rem!important;">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                {% endif %}
+<!--
+                    <form action="{%  url 'escrm:kontrahent-delete' kontrahent.pk %}" method="post" class="form-inline">
+                        {% csrf_token %}
+                        <button type="submit" data-toggle="tooltip" title="Usuń kontrahenta" class="btn btn-link btn-sm confirm" style="padding: 0 0.5rem!important;">
+                            <i class="far fa-trash-alt" ></i>
+                        </button>
+                    </form>-->
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+{% else %}
+    <div class="row">
+    <p>Nie ma zdefiniowanych kontrahentów.</p>
+    </div>
+
+{% endif %}
+</div>
+    <script>
+    $(document).ready(function() {
+        $('.confirm').on('click', function(e){
+            conf = confirm("Czy na pewno chcesz usunąć tego kontrahenta ?");
+            if (conf == true) {
+                return conf;
+            } else {
+                e.preventDefault();
+            }
+        });
+        $('#data').DataTable( {
+            "ordering": true,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Polish.json"
+        },
+            "columns": [
+                null,
+                null,
+                null,
+                null,
+                null,
+                { "width": "200px"  },
+            ]
+        });
+        setSearchableColumns();
+         $('[data-toggle="tooltip"]').tooltip();
+    });
+    </script>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% load widget_tweaks %}
+
+<div class="modal-header">
+  <h5 class="modal-title" id="lista_kontrahentow_modal_tytul">
+    Wprowadź osobę: {{ object.nazwa_krotka }}
+  </h5>
+  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form action="" method="post" id="create-osoba-form">
+    {% csrf_token %}
+    {% for hidden in form_osoba.hidden_fields %}
+      {{ hidden }}
+    {% endfor %}
+    {% for hidden in form_osoba_adres.hidden_fields %}
+      {{ hidden }}
+    {% endfor %}
+
+    {% for field in form_osoba.visible_fields %}
+      <div class="form-group row">
+        <label for="{{ field.id_for_label }}" class="col-sm-3 col-form-label">{{ field.label }}:</label>
+        {% if form_osoba.is_bound %}
+          {% if field.errors %}
+            <div class="col-sm-9">
+              {% render_field field class="form-control is-invalid" %}
+              {% for error in field.errors %}
+                <div class="col-sm-3"></div>
+                <div class="invalid-feedback">
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="col-sm-9">
+              {% render_field field class="form-control is-valid" %}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="col-sm-9">
+            {% render_field field class="form-control" %}
+          </div>
+        {% endif %}
+
+        {% if field.help_text %}
+          <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+    {% for field in form_osoba_adres.visible_fields %}
+      <div class="form-group row">
+        <label for="{{ field.id_for_label }}" class="col-sm-3 col-form-label">{{ field.label }}:</label>
+          {% if form_osoba_adres.is_bound %}
+          {% if field.errors %}
+            <div class="col-sm-9">
+              {% render_field field class="form-control is-invalid" %}
+              {% for error in field.errors %}
+                <div class="col-sm-3"></div>
+                <div class="invalid-feedback">
+                  {{ error }}
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="col-sm-9">
+              {% render_field field class="form-control is-valid" %}
+            </div>
+          {% endif %}
+        {% else %}
+            <div class="col-sm-9">
+              {% render_field field class="form-control" %}
+            </div>
+        {% endif %}
+
+        {% if field.help_text %}
+          <small class="form-text text-muted">{{ field.help_text }}</small>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+  </form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+  <button type="button" class="btn btn-info" id="js-submit-create-osoba" data-url="{% url 'escrm:osoba-create' %}">Zapisz</button>
+</div>
+

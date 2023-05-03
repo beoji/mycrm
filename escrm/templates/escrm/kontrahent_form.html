@@ -1,0 +1,66 @@
+{% extends "dashboard_template.html" %}
+{% load widget_tweaks %}
+{% block breadcrumbs %}
+    {{ block.super }} / Dodaj kontrahenta
+{% endblock %}
+
+{% block content-header %}
+  <h2>{{ title }}</h2>
+  <div class="h-divider"></div>
+{% endblock %}
+
+{% block content %}
+
+<form action="" method="post">
+  {% csrf_token %}
+
+  {% for hidden in form_kontrahent.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
+
+  {% for hidden in form_adres.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-1"></div>
+      <div class="col-sm-5">
+        {% for field in form_kontrahent.visible_fields %}
+        <div class="form-group row">
+          <label for="{{ field.label_for }}">{{ field.label }}</label>
+            {% render_field field class="form-control" %}
+            {% for error in field.errors %}
+              <small class="form-text text-muted">
+                {{ error }}
+              </small>
+            {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <div class="col-sm-5">
+        {% for field in form_adres.visible_fields %}
+          <div class="form-group">
+            <label for="{{ field.label_for }}">{{ field.label }}</label>
+            {% render_field field class="form-control" %}
+            {% for error in field.errors %}
+              <small class="form-text text-muted">
+                {{ error }}
+              </small>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="submit-row float-right">
+    <a class="btn btn-light" href="{% if next %}{{ next }}{% else %}{% url 'escrm:kontrahent-list' %}{% endif %}">Anuluj</a>
+    <input type="submit" class="btn btn-default" value="Zapisz" style="cursor:pointer;" />
+  </div>
+  <br>
+</form>
+
+{%  endblock %}
+

@@ -1,0 +1,241 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<div class="row">
+
+  <div id="osoba_content_detail" class="col-sm-6">
+    {% include 'escrm/osoby/osoba_detail_content_render.html' %}
+  </div>
+
+  <div class="col-sm-6">
+    <span class="static-list-field-label">
+      Kontakty:
+      <a id="create-adres-button" href="#" class="float-right" data-toggle="modal" data-target="#create-adres-osoba-modal">+dodaj kontakt</a>
+    </span>
+    <table class="table table-sm table-hover" style="margin-top:10px;">
+      <thead>
+        <tr>
+          <th scope="col">E-mail</th>
+          <th scope="col">Telefon</th>
+          <th scope="col" style="width:120px">Operacje</th>
+        </tr>
+      </thead>
+      <tbody id="osoba_adres_table">
+        {% include 'escrm/adresy/osobaadres_table.html' %}
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<br><br>
+<div class="submit-row float-right">
+  <form action="{%  url 'escrm:osoba-delete' osoba.pk %}" method="post" class="form-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-danger btn-sm confirm" style="cursor:pointer">
+      Usuń
+      <i class="far fa-trash-alt"></i>
+    </button>
+  </form>
+</div>
+<br>
+
+{% endblock %}
+
+
+{% block modal %}
+
+<div id="update-osoba-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+
+<div id="create-adres-osoba-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      {% include 'escrm/adresy/osobaadres_form_modal.html' %}
+    </div>
+  </div>
+</div>
+
+<div id="update-adres-osoba-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+
+{% block javascript %}
+
+<script>
+$(function(){
+
+  setupAjax();
+
+  $(document).on('click', '.confirm', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć wybraną osobę?");
+      if (conf == true) {
+        return conf;
+      } else {
+        e.preventDefault();
+      }
+  });
+
+  $(document).on('click', '.confirm2', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć wybrany adres?");
+      if (conf == true) {
+        return conf;
+      } else {
+        e.preventDefault();
+      }
+  });
+
+  $(document).on('click', '.js-get-update-osoba', function(e){
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'get',
+      dataType: 'json',
+      data: {
+        pk: $(this).attr('data-pk')
+      },
+      success: function(data){
+        console.log(data.modal);
+        $('#update-osoba-modal .modal-content').html(data.modal);
+        $('#update-osoba-modal').modal('show');
+      }
+    })
+  });
+
+  $(document).on('click', '#js-submit-update-osoba', function (e){
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        imie: $('#id_imie').val(),
+        nazwisko: $('#id_nazwisko').val(),
+        stanowisko: $('#id_stanowisko').val(),
+        notatka: $('#id_notatka').val(),
+        kontrahent: $('#id_kontrahent').val(),
+        csrfmiddlewaretoken: $('#update-osoba-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function (data) {
+        if(data.is_valid == 'True'){
+          $('#osoba_content_detail').html(data.detail);
+          $('#update-osoba-modal').modal('hide');
+          alert('Zapisano');
+        } else {
+          $('#update-osoba-modal .modal-content').html(data.invalid_form);
+        }
+      }
+    })
+  });
+
+  $(document).on('click', '#js-submit-create-adres', function (e){
+    var html_modal = $('#update-osoba-modal .modal-content').detach();
+    $.ajax({
+      url: $('#create-adres-form').attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        osoba: {{ object.pk }},
+        email: $('#id_email').val(),
+        telefon: $('#id_telefon').val(),
+        csrfmiddlewaretoken: $('#create-adres-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data){
+        if (data.is_valid == 'True'){
+          $('#osoba_adres_table').empty();
+          $('#osoba_adres_table').html(data.table);
+          $('#create-adres-osoba-modal').modal('hide');
+          $('#create-adres-osoba-modal .modal-content').html(data.new_form);
+          alert('Zapisano');
+        } else {
+            $('#create-adres-osoba-modal .modal-content').html(data.invalid_form);
+        }
+      }
+    })
+    $('#update-osoba-modal .modal-dialog').html(html_modal);
+  });
+
+  $(document).on('click', '#create-adres-button', function (e){
+    $('#adres-osoba-update-modal').empty();
+  })
+
+
+  $(document).on('click', '.js-delete-osoba-adres', function (e){
+    var button = $(this);
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'post',
+      dataType: 'json',
+      data: {
+        csrfmiddlewaretoken: $('#osoba-adres-delete-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(msg){
+        if (msg.result == 'success'){
+          var pk = button.attr('data-pk');
+          var element = '#tr_' + pk;
+          $(element).fadeOut();
+        } else if (msg.result == 'domyslny') {
+          alert('Nie można usunąć adresu domyślnego!');
+        }
+      }
+    })
+  });
+
+  $(document).on('click', '.js-update-osoba-adres', function(e){
+    $.ajax({
+      url: $(this).attr('data-url'),
+      type: 'get',
+      dataType: 'json',
+      data: {
+        pk: $(this).attr('data-pk')
+      },
+      success: function(msg){
+        $('#update-adres-osoba-modal .modal-content').empty();
+        $('#update-adres-osoba-modal .modal-content').html(msg.modal);
+        $('#update-adres-osoba-modal').modal('show');
+      }
+    })
+  });
+
+  $(document).on('click', '#js-submit-update-adres', function(e){
+    var html = $('#create-adres-osoba-modal .modal-content').detach();
+    var form = $('#update-adres-form');
+    $.ajax({
+     url: form.attr('data-url'),
+     type: 'post',
+     dataType: 'json',
+     data: {
+       osoba: {{ object.pk }},
+       email: $('#id_email').val(),
+       telefon: $('#id_telefon').val(),
+       czy_domyslny: $('#id_czy_domyslny').val(),
+       csrfmiddlewaretoken: $('#update-adres-form input[name=csrfmiddlewaretoken]').val()
+     },
+     success: function(data){
+       if(data.is_valid == 'True'){
+         $('#osoba_adres_table').empty();
+         $('#osoba_adres_table').html(data.table);
+         $('#update-adres-osoba-modal').modal('hide');
+         alert('Zapisano');
+       } else {
+          $('#update-adres-osoba-modal .modal-content').html(data.invalid_form);
+       }
+     }
+    });
+    $('#create-adres-osoba-modal .modal-dialog').html(html);
+  });
+
+})
+
+</script>
+
+{% endblock %}

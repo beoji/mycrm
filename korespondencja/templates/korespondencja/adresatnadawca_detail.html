@@ -1,0 +1,81 @@
+{% extends "base_generic.html" %}
+
+{% block content-header %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-8"><h1>{{ kontakt.nazwa }} - Kontakt</h1></div>
+            <div class="col-sm-4">
+                <div class="float-right" style="padding-top:8px">
+                    <a class="btn btn-link" href="{% url 'korespondencja:kontakt-update' kontakt.pk %}">
+                        <i class="fas fa-edit"></i> Edytuj
+                    </a>
+                    <a class="btn btn-link" href="{% url 'korespondencja:kontakt-delete' kontakt.pk %}">
+                        <i class="far fa-trash-alt"></i> Usuń
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="h-divider"></div>
+
+{% endblock content-header %}
+
+{% block content %}
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-6">
+                <ul class="display-static-list">
+                    <li class="static-list-field-label">nazwa adresata/nadawcy:</li>
+                    <li class="static-list-field-value">{{ kontakt.nazwa }}</li>
+                    <li class="static-list-field-label">miasto:</li>
+                    <li class="static-list-field-value">{{ kontakt.miasto }}</li>
+                    <li class="static-list-field-label">kod-pocztowy:</li>
+                    <li class="static-list-field-value">{{ kontakt.kod_pocztowy }}</li>
+                    <li class="static-list-field-label">ulica:</li>
+                    <li class="static-list-field-value">{{ kontakt.ulica }}</li>
+                </ul>
+            </div>
+            <div class="col-sm-6" style="background:#ddd;">
+                <table>
+                    {% for mail in kontakt.korespondencja_set.all %}
+                        <tr>
+                            <td>
+                                {% if mail.rodzaj == 'Wychodząca' %}
+                                    <i class="fas fa-long-arrow-alt-up" style="color:#8BC34A"></i>
+                                {% else %}
+                                    <i class="fas fa-long-arrow-alt-down" style="color:#F78858"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ mail.temat }}
+                            </td>
+                            <td>
+                                {{ mail.data_dodania }}
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <p>Brak powiązanej korespondencji.</p>
+                    {% endfor %}
+                </table>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+    $(document).ready(function() {
+        $('.confirm').on('click', function(e){
+            conf = confirm("Czy na pewno chcesz usunąć wybrany kontakt?");
+            if (conf == true) {
+                return conf;
+            } else {
+                e.preventDefault();
+            }
+        });
+    });
+    </script>
+
+{% endblock %}

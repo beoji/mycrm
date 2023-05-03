@@ -1,0 +1,12 @@
+{% extends "dashboard_template.html" %}
+{% block breadcrumbs %}
+    {{ block.super }} / <a href="{% url 'escrm:kontrahent-dashboard' kontrahent.pk %}">CRM - {{ kontrahent.nazwa_krotka }}</a>
+{% endblock %}
+{% block content %}
+    <div class="dashboard-boxes-container">
+    {% include 'escrm/kontrahent-dashboard/dane_adresowe.html' %}
+    {% include 'escrm/kontrahent-dashboard/oferty_dashboard.html' %}
+    {% include 'escrm/kontrahent-dashboard/umowy_dashboard.html' %}
+    {% include 'escrm/kontrahent-dashboard/zdarzenia_dashboard.html' %}
+    </div>
+{% endblock %}

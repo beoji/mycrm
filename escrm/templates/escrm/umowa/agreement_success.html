@@ -1,0 +1,21 @@
+{% extends 'base_generic.html' %}
+
+{% block content %}
+
+{% if payment_object %}
+Utworzono pomyslnie. Platnosc dla {{ payment_object.umowa.kontrahent }}:
+Platność: {{ payment_object.kwota }}{{ payment_object.umowa.waluta }} do {{ payment_object.termin }}
+
+{% endif %}
+
+{% if payment_list %}
+  {% for payment_obj in payment_list %}
+    Utworzono pomyslnie. Platnosc dla {{ payment_obj.umowa.kontrahent }}:
+    Platność: {{ payment_obj.kwota }}{{ payment_obj.umowa.waluta }} do {{ payment_obj.termin }}
+    <br>
+  {% endfor %}
+  <a class="btn btn-outline-primary btn-sm" href="{{ payment_list.0.umowa.kontrahent.get_absolute_url }}">Powrót</a>
+{% endif %}
+
+
+{% endblock %}

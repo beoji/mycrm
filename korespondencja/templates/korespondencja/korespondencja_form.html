@@ -1,0 +1,227 @@
+{% extends "base_generic.html" %}
+{% load widget_tweaks %}
+
+{% block content-header %}
+
+  {% if request.resolver_match.url_name == 'korespondencja-create' %}
+    <h2>Dodawanie korespondencji</h2>
+  {% else %}
+    <h2>Edycja korespondencji {{ form_co.temat.value }}</h2>
+  {% endif %}
+  <div class="h-divider"></div>
+
+{% endblock content-header %}
+
+{% block content %}
+
+  <form method="POST" action="" autocomplete="off">
+    {% csrf_token %}
+    <div class="row">
+
+    {% for field in form_co.hidden_fields %}
+      {{ field }}
+    {% endfor %}
+
+    {% for field in form_adres.hidden_fields %}
+      {{ field }}
+    {% endfor %}
+
+    <div class="col-sm-6">
+      <div class="container">
+
+        <div class="form-group row">
+          <label for="{{ form_co.temat.id_for_label }}" class="col-sm-3 col-form-label">{{ form_co.temat.label }}:</label>
+          <div class="col-sm-9">
+            {% render_field form_co.temat class="form-control" %}
+            {% for error in field.errors %}
+              <small class="form-text text-muted">
+                {{ error }}
+              </small>
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label for="{{ form_co.data_przyjscia_wyjscia.id_for_label }}" id="label_{{ form_co.data_przyjscia_wyjscia.id_for_label }}" class="col-sm-3 col-form-label" style="padding-right:0;">Data przyjścia:</label>
+          <div class="col-sm-7">
+            {% render_field form_co.data_przyjscia_wyjscia class="form-control" %}
+            {% for error in form_co.data_przyjscia_wyjscia.errors %}
+              <small class="text-muted">
+                {{ error }}
+              </small>
+            {% endfor %}
+          </div>
+          <div class="col-sm-2" style="padding-left:0;">
+            <a href="#" id="today" class="btn btn-link" style="display:block;padding-left:0;">Dziś</a>
+          </div>
+        </div>
+
+        <div class="form-group row">
+          <label for="{{ form_co.rodzaj.id_for_label }}" id="label_{{ form_co.data_przyjscia_wyjscia.id_for_label }}" class="col-sm-3 col-form-label" style="padding-right:0;">{{ form_co.rodzaj.label }}:</label>
+          <div class="col-sm-7">
+            {% render_field form_co.rodzaj class="form-control" %}
+            {% for error in form_co.rodzaj.errors %}
+              <small class="text-muted">
+                {{ error }}
+              </small>
+            {% endfor %}
+          </div>
+          <div class="col-sm-2" style="padding-left:0;">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="container">
+        {% for field in form_adres.visible_fields  %}
+          <div class="form-group row">
+            <label for="{{ field.id_for_label }}" id="label_{{ field.id_for_label }}" class="col-sm-3 col-form-label" style="padding-right:0;">{{ field.label }}:</label>
+            <div class="{% if field == form_adres.nazwa %}col-sm-9{% else %}col-sm-7{% endif %}">
+              {% if field == form_adres.nazwa %}
+                <small class="text-muted" style="position:absolute;top:-20px;"><span id="text-contact">Zostanie utworzony nowy kontakt.</span>
+                <a id="open-modal" data-toggle="modal" data-target="#kontrahent-dane-modal" href="#" class="btn btn-link btn-sm float-right" style="position:relative;top:-10px;right:-50px;">Wczytaj kontrahenta CRM</a></small>
+                {% render_field field class="form-control" list="helper" %}
+                <datalist id="helper"></datalist>
+              {% else %}
+                {% render_field field class="form-control" %}
+              {% endif %}
+            </div>
+            <script>
+              {% if request.resolver_match.url_name == 'korespondencja-update' %}
+                $('#id_miasto').attr('readonly', true);
+                $('#id_kod_pocztowy').attr('readonly', true);
+                $('#id_ulica').attr('readonly', true);
+                $('#text-contact').hide();
+              {% endif %}
+            </script>
+            {% for error in field.errors %}
+              <small class="text-muted">
+                {{ error }}
+              </small>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  {% url 'korespondencja:korespondencja-create' as widok %}
+  <input type="hidden" value="" name="is_next" id="is_next">
+  <div class="row" style="margin-top:15px">
+    <div class="col-sm-12">
+      <a class="btn btn-light float-left" href="{% url 'korespondencja:korespondencja-list' %}">Anuluj</a>
+      {% if request.path == widok %}
+        <input type="submit" class="btn btn-primary float-right" value="Zapisz i dodaj nową" style="cursor:pointer;" id="add_and_next"/>
+      {% endif %}
+      <input type="submit" class="btn btn-primary float-right" value="Zapisz" style="cursor:pointer;margin-right:5px" />
+    </div>
+  </div>
+
+</form>
+
+{% include 'snippets/korespondencja_kontrahent_dane_modal.html' %}
+
+<script>
+
+function makeToday(e){
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1; //January is 0!
+  var yyyy = today.getFullYear();
+
+  if(dd<10) {
+      dd = '0' + dd
+  }
+
+  if(mm<10) {
+      mm = '0' + mm
+  }
+
+  today = yyyy + '-' + mm + '-' + dd;
+  $('#id_data_przyjscia_wyjscia').val(today);
+};
+
+function putNext(e){
+  $("#is_next").val('yes');
+};
+
+function inputFunction(e){
+  var input = $('#id_nazwa').val();
+  var helper = $('#helper');
+  var options = helper[0].options;
+
+  for (var i = 0; i < options.length; i++){
+    if (options[i].value == input){
+      $('#id_miasto').val(options[i].getAttribute('city'));
+      $('#id_kod_pocztowy').val(options[i].getAttribute('post-code'));
+      $('#id_ulica').val(options[i].getAttribute('street'));
+      $('#id_miasto').attr('readonly', true);
+      $('#id_kod_pocztowy').attr('readonly', true);
+      $('#id_ulica').attr('readonly', true);
+      $('#text-contact').css('opacity', '0');
+      return;
+    }
+  }
+
+  if (input.length > 0){
+    $.ajax({
+      url: '{% url 'korespondencja:personhelper' %}',
+      type: 'get',
+      dataType: 'json',
+      data: {
+          'input': input
+      },
+      success: function(msg) {
+        var response = JSON.parse(msg.results);
+        console.log(response);
+        if (response.length > 0) {
+          helper.empty();
+          for (var i = 0; i < response.length; i++) {
+            helper.append('<option value="' +
+              response[i].fields.nazwa +
+              '" city="' + response[i].fields.miasto +
+              '" post-code="' + response[i].fields.kod_pocztowy +
+              '" street="' + response[i].fields.ulica +
+              '">');
+
+          }
+        } else {
+          helper.empty();
+          $('#id_miasto').attr('readonly', false);
+          $('#id_kod_pocztowy').attr('readonly', false);
+          $('#id_ulica').attr('readonly', false);
+          $('#id_miasto').val('');
+          $('#id_kod_pocztowy').val('');
+          $('#id_ulica').val('');
+          $('#text-contact').css('opacity', '1');
+        }
+      }
+    })
+  } else {
+    helper.empty();
+    $('#id_miasto').val('');
+    $('#id_kod_pocztowy').val('');
+    $('#id_ulica').val('');
+    $('#id_miasto').attr('readonly', false);
+    $('#id_kod_pocztowy').attr('readonly', false);
+    $('#id_ulica').attr('readonly', false);
+    $('#text-contact').css('opacity', '1');
+  }
+}
+
+$(function() {
+
+  {% if request.path == widok %}
+    makeToday();
+  {% endif %}
+
+  $('#today').on('click', makeToday);
+  $('#add_and_next').on('click', putNext);
+
+  $('#id_nazwa').on('input', inputFunction);
+})
+
+</script>
+
+{% endblock content %}

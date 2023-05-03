@@ -1,0 +1,51 @@
+{% extends "dashboard_template.html" %}
+{% block breadcrumbs %}
+    {{ block.super }} / Moje umowy
+{% endblock %}
+{% block content-header %}
+    <h1>Moje umowy</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container-tables-crm">
+{% if lista_umow %}
+    <table class="table table-sm" id="data">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Temat</th>
+            <th scope="col">Produkt</th>
+            <th scope="col">Kontrahent</th>
+            <th scope="col">Status</th>
+            <th scope="col">Wartość</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for umowa in lista_umow %}
+            <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+                <td><a href="{% url 'escrm:umowa-detail' kontrahent=umowa.kontrahent.pk pk=umowa.pk %}">{{ umowa.temat }}</a></td>
+                <td>{{ umowa.produkt }}</td>
+                <td><a href="{% url 'escrm:kontrahent-detail' umowa.kontrahent.id_kontrahenta %}">{{ umowa.kontrahent.nazwa_dluga }}</a></td>
+                <td>{{ umowa.status.nazwa }}</td>
+                <td>{{ umowa.wartosc }} {{ umowa.waluta }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Brak umów do wyświetlenia.</p>
+{% endif %}
+    </div>
+    <script>
+    $(document).ready(function() {
+        $('#data').DataTable( {
+            "ordering": true,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Polish.json"
+            }
+        });
+        setSearchableColumns();
+    });
+    </script>
+{%  endblock %}

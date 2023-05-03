@@ -1,0 +1,44 @@
+{% load widget_tweaks %}
+
+<h3>Krok 1</h3><br>
+
+{% for hidden in form_umowa.hidden_fields %}
+  {{ hidden }}
+{% endfor %}
+
+{% if form.non_field_errors %}
+  <div class="alert alert-danger" role="alert">
+    {% for error in form.non_field_errors %}
+      {{ error }}
+    {% endfor %}
+  </div>
+{% endif %}
+
+{% for field in form_umowa.visible_fields %}
+  <div class="form-group row">
+  <label for="{{ field.id_for_label }}" class="col-sm-4 col-form-label">{{ field.label }}:</label>
+  {% if form_umowa.is_bound %}
+    {% if field.errors %}
+      {% render_field field class="form-control is-invalid col-sm-8" %}
+      {% for error in field.errors %}
+        <div class="col-sm-4"></div>
+        <div class="invalid-feedback">
+          {{ error }}
+        </div>
+      {% endfor %}
+    {% else %}
+      {% render_field field class="form-control is-valid col-sm-8" %}
+    {% endif %}
+  {% else %}
+    {% render_field field class="form-control col-sm-8" %}
+  {% endif %}
+
+  {% if field.help_text %}
+    <small class="form-text text-muted">{{ field.help_text }}</small>
+  {% endif %}
+  </div>
+{% endfor %}
+<div id="next-step" class="submit-row">
+  <input id="next-button" type="button" class="btn btn-primary float-right" value="Dalej" style="cursor:pointer;" />
+  <a class="btn btn-light float-right" href="{% url 'escrm:kontrahent-dashboard' kontrahent.id_kontrahenta %}">Anuluj</a>
+</div>

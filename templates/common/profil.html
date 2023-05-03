@@ -1,0 +1,34 @@
+{% extends "base_generic.html" %}
+{% block content-header %}
+    <div class="row">
+    <div class="col-9"><h1>{{ profil.user.first_name }} {{ profil.user.last_name }} - profil</h1></div>
+    <div class="col-3">
+        <a href="{% url "profil-edit" %}"><i class="far fa-edit fa-lg"></i>  edytuj</a>
+        <a href="{% url "password_change" %}">Zmień hasło</a></div>
+    <div class="h-divider"></div>
+    </div>
+{% endblock %}
+{% block content %}
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3">
+                <ul class="display-static-list">
+                    <li class="static-list-field-label">nazwa użytkownika</li>
+                    <li class="static-list-field-value">{{ profil.user.username }}</li>
+                    <li class="static-list-field-label">stanowisko</li>
+                    <li class="static-list-field-value">{{ profil.stanowisko }}</li>
+                    <li class="static-list-field-label">e-mail</li>
+                    <li class="static-list-field-value">{{ profil.user.email|default:"-" }}</li>
+                    <li class="static-list-field-label">telefon</li>
+                    <li class="static-list-field-value">{{ profil.telefon|default:"-" }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+     <div class="h-divider"></div>
+    <ul class="display-static-list">
+        <li class="static-list-field-label">ostatnie logowanie</li>
+        <li >{{ profil.user.last_login }}</li>
+    </ul>
+
+{% endblock %}

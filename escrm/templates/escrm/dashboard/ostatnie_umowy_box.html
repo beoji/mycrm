@@ -1,0 +1,24 @@
+<div class="dashboard-box">
+    <div class="dashboard-box-title">
+        <h4>Moje umowy</h4>
+        <div style="display:inline-block; float: right;">
+            <a href="{% url 'escrm:opiekun-umowy-list' %}"><i class="fas fa-list fa-2x"></i></a>
+        </div>
+    </div>
+    <div class="dashboard-box-content">
+    {% if lista_umow %}
+        <table class="table table-sm">
+            {% for umowa in lista_umow %}
+                <tr>
+                    <td><a href="{% url 'escrm:umowa-detail' kontrahent=umowa.kontrahent.pk pk=umowa.pk %}">{{ umowa.temat }}</a></td>
+                <td style="text-align: right">
+                    <a href="{% url 'escrm:kontrahent-detail' umowa.kontrahent.pk %}" style="text-decoration: none">{{ umowa.kontrahent.nazwa_krotka }}</a>
+                </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Aktualnie nie masz żadnych umów</p>
+    {% endif %}
+    </div>
+</div>

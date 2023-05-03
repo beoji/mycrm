@@ -1,0 +1,20 @@
+{% for korespondencja in korespondencja_list %}
+  <tr>
+    <th scope="row">{{ korespondencja.numer_korespondencji }}</th>
+    <td>{{ korespondencja.temat }}</td>
+    <td><a href="{% url 'korespondencja:kontakt-detail' korespondencja.adresat_nadawca.pk %}" class="btn-link">
+      {{ korespondencja.adresat_nadawca }}
+    </a></td>
+    <td>{{ korespondencja.rodzaj }}</td>
+    <td>{{ korespondencja.data_przyjscia_wyjscia|date:"Y-m-d" }}</td>
+    <td>
+      <a class="btn btn-link" href="{% url 'korespondencja:korespondencja-update' korespondencja.pk %}" style="padding: 0 0.5rem!important;">
+        <i class="fas fa-edit"></i>
+      </a>
+      <form action="{%  url 'korespondencja:korespondencja-delete' korespondencja.pk %}" method="post" class="form-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-link confirm" style="padding: 0 0.5rem!important;"><i class="far fa-trash-alt"></i></button>
+      </form>
+    </td>
+  </tr>
+{% endfor %}

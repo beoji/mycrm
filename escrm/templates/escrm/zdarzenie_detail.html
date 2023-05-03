@@ -1,0 +1,44 @@
+{% extends "escrm/dashboard/moje_zdarzenia.html" %}
+{% block breadcrumbs %}
+    {{ block.super }} / {{ zdarzenie.temat }}
+{% endblock %}
+{% block content-header %}
+    <h4>Zdarzenie: {{ zdarzenie.typ}} z dnia {{ zdarzenie.data_zdarzenia }}</h4>
+{% endblock %}
+{% block content %}
+<div class="container-tables-crm">
+    <h5>Data: <span class="text-muted">{{ zdarzenie.data_zdarzenia|title }}</span></h5>
+    <h5>Temat: <span class="text-muted">{{ zdarzenie.temat|title }}</span></h5>
+    <h5>Użytkownik: <span class="text-muted">{{ zdarzenie.uzytkownik|title }}</span></h5>
+    <h5>Typ: <span class="text-muted">{{ zdarzenie.typ|title }}</span></h5>
+    <h5>Kontrhent: <span class="text-muted">{{ zdarzenie.kontrahent|title }}</span></h5>
+    <h5>Notatka: <span class="text-muted">{{ zdarzenie.notatka|title }}</span></h5>
+
+    <br><br>
+    <div class="submit-row float-right">
+      <a class="btn btn-outline-primary btn-sm" href="{{ next }}">
+        <i class="fas fa-angle-left"></i>
+        Powrót do listy
+      </a>
+      <a class="btn btn-outline-primary btn-sm" href="{% url 'escrm:zdarzenie-update' zdarzenie.pk %}">Edytuj</a>
+      <form action="{%  url 'escrm:zdarzenie-delete' zdarzenie.pk %}" method="post" class="form-inline">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-outline-danger btn-sm confirm2" style="cursor:pointer">
+          Usuń
+          <i class="far fa-trash-alt"></i>
+        </button>
+      </form>
+    </div>
+</div>
+<script>
+
+  $('.confirm2').on('click', function(e){
+    conf = confirm("Czy na pewno chcesz usunąć zdarzenie?");
+    if (conf == true) {
+      return conf;
+    } else {
+      e.preventDefault();
+    }
+  });
+</script>
+{% endblock %}

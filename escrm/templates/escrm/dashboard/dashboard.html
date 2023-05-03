@@ -1,0 +1,10 @@
+{% extends "dashboard_template.html" %}
+
+{% block content %}
+<div class="dashboard-boxes-container">
+    {% include 'escrm/dashboard/moi_klienci_box.html' %}
+    {% include 'escrm/dashboard/ostatnie_umowy_box.html' %}
+    {% include 'escrm/dashboard/ostatnie_oferty_box.html' %}
+    {% include 'escrm/dashboard/ostatnie_zdarzenia_box.html' %}
+</div>
+{% endblock %}

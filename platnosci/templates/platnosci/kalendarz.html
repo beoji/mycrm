@@ -1,0 +1,225 @@
+{% extends "base_generic.html" %}
+
+{% block full-payment-view %}
+{% load calendar_tags %}
+{% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
+
+<div id="calendar-module" class="container-fluid">
+  <div class="row">
+    <!-- Panel 'boczny' kalendarza-->
+    <div class="col-4" style="background:#f6f6f6;padding-left:0px;padding-right:0px;" id="column-list">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col" id="calendar-header">
+            <!-- Nagłówek panela 'dnia' -->
+            <a href="#" class="float-left" id="prev"><i class="fas fa-angle-left"></i></a>
+            <span class="float-left">{{ day }} {{ month|month_name }} {{ year }}</span>
+            <a href="#" class="float-left" id="next"><i class="fas fa-angle-right"></i></a>
+            <div class="btn-group" style="margin-bottom:3px;left:45px;">
+            <div class="btn-group">
+              <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Rok
+              </button>
+              <div class="dropdown-menu">
+                <button class="dropdown-item year" data-year="2018">2018</button>
+                <button class="dropdown-item year" data-year="2019">2019</button>
+                <button class="dropdown-item year" data-year="2020">2020</button>
+                <button class="dropdown-item year" data-year="2021">2021</button>
+                <button class="dropdown-item year" data-year="2022">2022</button>
+                <button class="dropdown-item year" data-year="2023">2023</button>
+                <button class="dropdown-item year" data-year="2024">2024</button>
+                <button class="dropdown-item year" data-year="2025">2025</button>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Miesiąc
+              </button>
+              <div class="dropdown-menu">
+                <button class="dropdown-item month" data-month="1">Styczeń</button>
+                <button class="dropdown-item month" data-month="2">Luty</button>
+                <button class="dropdown-item month" data-month="3">Marzec</button>
+                <button class="dropdown-item month" data-month="4">Kwiecień</button>
+                <button class="dropdown-item month" data-month="5">Maj</button>
+                <button class="dropdown-item month" data-month="6">Czerwiec</button>
+                <button class="dropdown-item month" data-month="7">Lipiec</button>
+                <button class="dropdown-item month" data-month="8">Sierpień</button>
+                <button class="dropdown-item month" data-month="9">Wrzesień</button>
+                <button class="dropdown-item month" data-month="10">Paźdźiernik</button>
+                <button class="dropdown-item month" data-month="11">Listopad</button>
+                <button class="dropdown-item month" data-month="12">Grudzień</button>
+              </div>
+            </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="daily-header" class="row">
+        <div class="col-4">Nazwa</div>
+        <div class="col-3">Kwota</div>
+        <div class="col-3">Wpłacono</div>
+        <div class="col-2">Edycja</div>
+      </div>
+      {% for i in info %}
+          <!-- Pojedyńczy wiersz płatności -->
+          <div class="row" style="border-bottom: 1px solid #e9e9e9;">
+            <div class="col-4" id="column-calendar">
+              <a href="{% url 'escrm:umowa-detail' i.umowa.kontrahent.pk i.umowa.pk %}" class="payment-row">
+                {{ i.umowa.temat }}</a>
+            </div>
+            <div class="col-3">
+                {{ i.kwota }} {{ i.umowa.waluta }}
+            </div>
+            <div class="col-3">
+              {{ i.kwota_zaksiegowana }} {{ i.umowa.waluta }}
+            </div>
+            <div class="col-2">
+              <a data-id="{{ i.pk }}" data-url="{% url 'platnosci:payment-update' i.pk %}" class="btn btn-link btn-sm payment-update" href="#" style="font-size:12px;padding: 0;">
+                <i class="fas fa-pencil-alt"></i>
+              </a>
+            </div>
+          </div>
+      {% endfor %}
+    </div>
+    <!-- Kalendarz miesiąc-->
+    <table id="calendar" class="col-8">
+      {% for weeks in month_object %}
+        <tr id="week">
+        {% for day in weeks %}
+                     {% if day.1 == 0 %}
+            {% include 'platnosci/snippets/td_day.html' with day_string='Pn.' %}
+          {% endif %}{% if day.1 == 1 %}
+            {% include 'platnosci/snippets/td_day.html' with day_string='Wt.' %}
+          {% endif %}{% if day.1 == 2 %}
+            {% include 'platnosci/snippets/td_day.html' with day_string='Śr.' %}
+          {% endif %}{% if day.1 == 3 %}
+            {% include 'platnosci/snippets/td_day.html' with day_string='Czw.' %}
+          {% endif %}{% if day.1 == 4 %}
+            {% include 'platnosci/snippets/td_day.html' with day_string='Pt.' %}
+          {% endif %}{% if day.1 == 5 %}
+            {% include 'platnosci/snippets/td_day.html' with day_string='Sob.' %}
+          {% endif %}{% if day.1 == 6 %}
+            {% include 'platnosci/snippets/td_day.html' with day_string='Nd.' sunday='sunday' %}
+          {% endif %}
+        {% endfor %}
+        </tr>
+      {% endfor %}
+    </table>
+  </div>
+</div>
+<div id="update-payment-modal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+function updateQueryStringParam(key, value) {
+  baseUrl = [location.protocol, '//', location.host, location.pathname].join('');
+  urlQueryString = document.location.search;
+  var newParam = key + '=' + value,
+  params = '?' + newParam;
+
+  if (urlQueryString) {
+    keyRegex = new RegExp('([\?&])' + key + '[^&]*');
+    if (urlQueryString.match(keyRegex) !== null) {
+      params = urlQueryString.replace(keyRegex, "$1" + newParam);
+    } else {
+      params = urlQueryString + '&' + newParam;
+    }
+  }
+  window.history.replaceState({}, "", baseUrl + params);
+}
+$(function(){
+  $(document).on('click', '.payment-update', function(e){
+    var data_url = $(this).attr('data-url');
+    $.ajax({
+      url: data_url,
+      type: 'get',
+      dataType: 'json',
+      success: function(data){
+        $('#update-payment-modal .modal-content').empty();
+        $('#update-payment-modal .modal-content').html(data.modal);
+        $('#update-payment-modal').modal('show');
+      }
+    })
+  });
+  $(document).on('click', '#payment-update-save', function(e){
+    var data_url = $(this).attr('data-url');
+    $.ajax({
+      url: data_url,
+      type: 'post',
+      dataType: 'json',
+      data: {
+        termin: $('#id_termin').val(),
+        kwota: $('#id_kwota').val(),
+        kwota_zaksiegowana: $('#id_kwota_zaksiegowana').val(),
+        csrfmiddlewaretoken: $('#update-payment-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(data){
+        if (data.result == 'success'){
+          alert('saved');
+          $('#update-payment-modal').modal('hide');
+        } else {
+          $('#update-payment-modal .modal-content').empty();
+          $('#update-payment-modal .modal-content').html(data.modal);
+        }
+      }
+    })
+  });
+  $(document).on('click', '#prev',function(e){
+    e.preventDefault();
+    console.log(window.location.href);
+    var url = new URL(window.location.href);
+    var month = url.searchParams.get("m");
+    if(month=='1'){
+      var year = url.searchParams.get("y");
+      var new_year = parseInt(year);
+      new_year -= 1;
+      var new_month = 12;
+      updateQueryStringParam('y', new_year);
+      updateQueryStringParam('m', new_month);
+    } else {
+      updateQueryStringParam('m', (parseInt(month)-1).toString());
+    }
+    updateQueryStringParam('d', '1');
+    location.reload();
+  });
+  $(document).on('click', '#next', function(e){
+    e.preventDefault();
+    console.log(window.location.href);
+    var url = new URL(window.location.href);
+    var month = url.searchParams.get("m");
+    if(month=='12'){
+      var year = url.searchParams.get("y");
+      var new_year = parseInt(year);
+      new_year += 1;
+      var new_month = 1;
+      updateQueryStringParam('y', new_year);
+      updateQueryStringParam('m', new_month);
+    } else {
+      updateQueryStringParam('m', (parseInt(month)+1).toString());
+    }
+    updateQueryStringParam('d', '1');
+    location.reload()
+  });
+  $('.month').on('click', function(e){
+    var num_of_month = $(this).attr('data-month');
+    updateQueryStringParam('m', num_of_month.toString());
+    updateQueryStringParam('d', '1');
+    location.reload();
+  })
+  $('.year').on('click', function(e){
+    var num_of_year = $(this).attr('data-year');
+    updateQueryStringParam('y', num_of_year.toString());
+    updateQueryStringParam('d', '1');
+    location.reload();
+  })
+
+});
+</script>
+{% endblock %}

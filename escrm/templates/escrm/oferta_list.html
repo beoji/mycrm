@@ -1,0 +1,71 @@
+{% extends "escrm/kontrahent_dashboard.html" %}
+{% block breadcrumbs %}
+    {{ block.super }} / <a href="{% url 'escrm:kontrahent-oferty' kontrahent.pk %}">Oferty - {{ kontrahent.nazwa_krotka }}</a>
+{% endblock %}
+{% block content-header %}
+    <h1>{{ kontrahent.nazwa_krotka }} - oferty</h1>
+{% endblock %}
+
+{% block content %}
+    <div class="container-tables-crm">
+    <div class="submit-row">
+    <a class="btn btn-success" href="{% url 'escrm:oferta-create' kontrahent.pk %}"><i class="fas fa-plus"></i>&nbsp; Dodaj ofertę</a>
+</div>
+{% if lista_ofert %}
+    <table class="table table-sm" id="data">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Temat</th>
+            <th scope="col">Produkt</th>
+            <th scope="col">Status</th>
+            <th scope="col">Wartość</th>
+            <th scope="col">Operacje</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for oferta in lista_ofert %}
+            <tr>
+            <th scope="row">{{ forloop.counter }}</th>
+                <td><a href="{% url 'escrm:oferta-detail' pk=kontrahent.id_pk_oferty=oferta.pk %}">{{ oferta.temat }}</a></td>
+                <td>{{ oferta.produkt }}</td>
+                <td>{{ oferta.status.nazwa_statusu }}</td>
+                <td>{{ oferta.wartosc }} {{ oferta.waluta }}</td>
+                <td>
+                    <a class="btn btn-link btn-sm" data-toggle="tooltip" title="Edytuj ofertę" href="{% url 'escrm:oferta-update' kontrahent=kontrahent.id_kontrahenta pk=oferta.pk %}" style="padding: 0 0.5rem!important;">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form action="{%  url 'escrm:oferta-delete' oferta.pk %}" method="post" class="form-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger btn-sm confirm" style="cursor:pointer">
+                          <i class="far fa-trash-alt"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% else %}
+    <p>Aktualnie brak ofert dla tego kontrahenta.</p>
+{% endif %}
+    </div>
+    <script>
+    $(document).ready(function() {
+        $('.confirm').on('click', function(e){
+            conf = confirm("Czy na pewno chcesz usunąć tę ofertę?");
+            if (conf == true) {
+                return conf;
+            } else {
+                e.preventDefault();
+            }
+        });
+        $('#data').DataTable( {
+            "ordering": true,
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Polish.json"
+        }
+    } );
+    });
+    </script>
+{%  endblock %}

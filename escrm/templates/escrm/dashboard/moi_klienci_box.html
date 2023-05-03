@@ -1,0 +1,29 @@
+<div class="dashboard-box">
+    <div class="dashboard-box-title">
+        <h4>Moi klienci</h4>
+        <div style="display:inline-block; float: right;">
+            <a href="{% url 'escrm:opiekun-klienci-list' %}"><i class="fas fa-list fa-2x"></i></a>
+            <a href="{% url 'escrm:kontrahent-create' %}">
+            <i class="fas fa-plus-circle fa-2x" style="color: #218838"></i></a>
+        </div>
+    </div>
+    <div class="dashboard-box-content">
+    {% if lista_kontrahentow %}
+        <table class="table table-sm">
+            {% for kontrahent in lista_kontrahentow %}
+                <tr>
+                    <td><a href="{% url 'escrm:kontrahent-dashboard' kontrahent.pk %}">{{ kontrahent.nazwa_krotka }}</a></td>
+                <td style="text-align: right">
+                    <a href="{% url 'escrm:kontrahent-dashboard' kontrahent.pk %}" style="text-decoration: none">
+                        <button type="button" class="btn btn-small btn-success" data-toggle="tooltip" title="Przejdź do CRM" style="padding: 0 0.5rem!important;">CRM
+                        </button>
+                    </a>
+                </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>Aktualnie nie jesteś opiekunem żadnego klienta</p>
+    {% endif %}
+    </div>
+</div>

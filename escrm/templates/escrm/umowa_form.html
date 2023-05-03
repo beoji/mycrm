@@ -1,0 +1,140 @@
+{% extends "escrm/umowa_list.html" %}
+{% load widget_tweaks %}
+{% block breadcrumbs %}
+    {{ block.super }} / nowa umowa
+{% endblock %}
+
+{% block content-header %}
+    <h2>Umowa dla {{ kontrahent.nazwa_krotka }}</h2>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <form id="agreement-form" class="container-fluid" action="" method="post" data-url="{% url 'escrm:umowa-valid' kontrahent.pk %}">
+    <div class="row">
+      {% csrf_token %}
+      <div id="agreement-div" class="col-sm-5">
+
+        {% include 'escrm/umowa/agreement.html' %}
+      </div>
+
+      <div id="payment-div" class="col-sm-7">
+
+        {% include 'escrm/umowa/payment.html' %}
+      </div>
+    </div>
+    <div class="submit-row float-right" id="accept">
+      <input type="button" class="btn btn-default" value="Wstecz" id="back" style="cursor:pointer;" />
+      <input type="submit" class="btn btn-primary" value="Zapisz" style="cursor:pointer;" />
+
+    </div>
+  </form>
+</div>
+
+{%  endblock %}
+
+{% block javascript %}
+
+<script>
+function makeToday(e){
+  var today = new Date();
+  var dd = today.getDate();
+  var mm = today.getMonth()+1; //January is 0!
+  var yyyy = today.getFullYear();
+
+  if(dd<10) {
+      dd = '0' + dd
+  }
+
+  if(mm<10) {
+      mm = '0' + mm
+  }
+
+  today = yyyy + '-' + mm + '-' + dd;
+  $('#id_data_sporzadzenia').val(today);
+};
+$(function(){
+  makeToday();
+  $(document).on('click', '#next-button', function(e){
+    var form = $('#agreement-form');
+    var url = form.attr('data-url');
+    $.ajax({
+      url: url,
+      type: 'get',
+      dataType: 'json',
+      data: {
+        temat: $('#id_temat').val(),
+        produkt: $('#id_produkt').val(),
+        termin_waznosci: $('#id_termin_waznosci').val(),
+        wartosc: $('#id_wartosc').val(),
+        status: $('#id_status').val(),
+        data_sporzadzenia: $('#id_data_sporzadzenia').val(),
+        data_platnosci: $('#id_data_platnosci').val(),
+        waluta: $('#id_waluta').val(),
+        termin_platnosci: $('#id_termin_platnosci').val(),
+        kontrahent: $('#id_kontrahent').val(),
+        csrfmiddlewaretoken: $('#agreement-form input[name=csrfmiddlewaretoken]').val()
+      },
+      success: function(message){
+          $('#agreement-div').empty();
+          $('#agreement-div').html(message.agreement_form);
+        if(message.is_valid=='True'){
+          $('#payment-div').html(message.payment_form);
+          $('#payment-div').css('display', 'block');
+          $('#next-step').hide();
+          $('#accept').css('display', 'block');
+          $('#id_temat').attr('readonly', 'true');
+          $('#id_temat').removeClass('is-valid is-invalid');
+          $('#id_produkt').attr('readonly', 'true');
+          $('#id_produkt').removeClass('is-valid is-invalid');
+          $('#id_termin_waznosci').attr('readonly', 'true');
+          $('#id_termin_waznosci').removeClass('is-valid is-invalid');
+          $('#id_wartosc').attr('readonly', 'true');
+          $('#id_wartosc').removeClass('is-valid is-invalid');
+          $('#id_status').attr('readonly', true);
+          $('#id_status').removeClass('is-valid is-invalid');
+          $('#id_data_sporzadzenia').attr('readonly', 'true');
+          $('#id_data_sporzadzenia').removeClass('is-valid is-invalid');
+          $('#id_data_platnosci').attr('readonly', 'true');
+          $('#id_data_platnosci').removeClass('is-valid is-invalid');
+          $('#id_waluta').attr('readonly', 'true');
+          $('#id_waluta').removeClass('is-valid is-invalid');
+          $('#id_termin_platnosci').attr('readonly', 'true');
+          $('#id_termin_platnosci').removeClass('is-valid is-invalid');
+        }
+      }
+    });
+  })
+
+  $(document).on('change', '#id_type_0', function(e){
+    if(this.value == 'jednorazowa')
+      $('#only-cyclic-div').css('display', 'none');
+  });
+
+  $(document).on('change', '#id_type_1', function(e){
+    if(this.value == 'cykliczna')
+      $('#only-cyclic-div').css('display', 'block');
+  });
+
+  $(document).on('click', '#back', function(e){
+    $('#payment-div').css('display', 'none');
+
+    $('#next-step').show();
+    $('#accept').css('display', 'none');
+    $('#id_temat').prop('readonly', false);
+    $('#id_produkt').prop('readonly', false);
+    $('#id_termin_waznosci').prop('readonly', false);
+    $('#id_wartosc').prop('readonly', false);
+    $('#id_status').prop('readonly', false);
+    $('input[name="status"]').prop('readonly', false);
+    $('#id_data_sporzadzenia').prop('readonly', false);
+    $('#id_data_platnosci').prop('readonly', false);
+    $('#id_waluta').prop('readonly', false);
+    $('#id_termin_platnosci').prop('readonly', false);
+  });
+
+})
+
+</script>
+
+{% endblock %}

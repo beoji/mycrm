@@ -1,0 +1,42 @@
+<nav class="navbar navbar-expand-lg sub-main-menu">
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav mr-auto">
+      {% if request.resolver_match.app_name == 'escrm' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'escrm:escrm-dashboard' %}">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'escrm:kontrahent-list' %}">Kontrahenci</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'escrm:zdarzenie-list' %}">Zdarzenia</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'escrm:produkty-list' %}">Produkty</a>
+        </li>
+      {% endif %}
+
+      {% if request.resolver_match.app_name == 'korespondencja' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'korespondencja:korespondencja-list' %}">Korespondencja</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'korespondencja:kontakt-list' %}">Adresaci/Nadawcy</a>
+        </li>
+      {% endif %}
+
+      {% if request.resolver_match.app_name == 'platnosci' %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'platnosci:kalendarz' %}?y={% now "Y" %}&m={% now "n" %}&d={% now "d" %}">Kalendarz</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'platnosci:lista' %}">Lista</a>
+        </li>
+      {% endif %}
+    </ul>
+  </div>
+</nav>
+
+
+
+
