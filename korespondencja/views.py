@@ -1,14 +1,13 @@
-from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from escrm.models import Korespondencja, AdresatNadawca, Kontrahent
-from django.urls import reverse
+from django.core.serializers import serialize
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.template.loader import render_to_string
+from django.urls import reverse
+from django.views import generic
+
+from escrm.models import Korespondencja, AdresatNadawca, Kontrahent
 from .forms import KorespondencjaForm, AdresatNadawcaForm
-from django.core.serializers import serialize
 
 
 # - KORESPONDENCJA
@@ -159,7 +158,7 @@ def get_mail_by_date(request):
             if date_to != 'null' and date_to != '':
                 queryset = queryset.filter(data_przyjscia_wyjscia__lte=date_to)
         table_html = render_to_string('snippets/korespondencja_table.html',
-                                        {'korespondencja_list': queryset})
+                                      {'korespondencja_list': queryset})
         return JsonResponse({'results': table_html})
 
 
@@ -189,6 +188,3 @@ class KontaktDelete(LoginRequiredMixin, generic.DeleteView):
 
     def get_success_url(self):
         return reverse('korespondencja:kontakt-list')
-
-
-

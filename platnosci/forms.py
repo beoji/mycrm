@@ -1,5 +1,4 @@
-from django.forms import ModelForm, Form
-from django import forms
+from django.forms import ModelForm
 from escrm.models import Platnosc
 
 

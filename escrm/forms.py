@@ -1,11 +1,11 @@
-from .models import Kontrahent, AdresKontrahent, Osoba, AdresOsoba, Oferta, Umowa, Zdarzenie, Dokument
 from django import forms
 from django.forms import ModelForm, Form
+
+from .models import Kontrahent, AdresKontrahent, Osoba, AdresOsoba, Oferta, Umowa, Zdarzenie, Dokument
 from .validators import *
 
 
 class OfertaForm(ModelForm):
-
     class Meta(ModelForm):
         model = Oferta
         fields = ['temat', 'produkt', 'termin_waznosci', 'wartosc', 'status',
@@ -18,7 +18,6 @@ class OfertaForm(ModelForm):
 
 
 class OfertaEditForm(ModelForm):
-
     class Meta(ModelForm):
         model = Oferta
         fields = ['temat', 'produkt', 'termin_waznosci', 'wartosc', 'waluta']
@@ -54,8 +53,10 @@ CYCLIC_CHOICES = [('pierwszego', 'Pierwszego'),
 
 class PlatnoscForm(Form):
     type = forms.ChoiceField(choices=TYPE_CHOICES, widget=forms.RadioSelect(), label='Rodzaj', required=True)
-    once_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}), label='Data płatności', required=False)
-    cyclic_end_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}), label='Data cykliczna koniec', required=False)
+    once_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}), label='Data płatności',
+                                required=False)
+    cyclic_end_date = forms.DateField(widget=forms.widgets.DateInput(attrs={'type': 'date'}),
+                                      label='Data cykliczna koniec', required=False)
     cyclic_type = forms.ChoiceField(choices=CYCLIC_CHOICES, widget=forms.RadioSelect(), label='Rodzaj', required=False)
     cyclic_day = forms.IntegerField(label='Data cykliczna dzień', required=False)
     cyclic_date_start = forms.IntegerField(label='Data cykliczna dzień od', required=False)
@@ -63,7 +64,6 @@ class PlatnoscForm(Form):
 
 
 class OsobaForm(ModelForm):
-
     class Meta(ModelForm):
         model = Osoba
         fields = ['imie', 'nazwisko', 'stanowisko', 'notatka']
@@ -74,7 +74,6 @@ class OsobaForm(ModelForm):
 
 
 class AdresOsobaForm(ModelForm):
-
     class Meta(ModelForm):
         model = AdresOsoba
         exclude = ['osoba', ]
@@ -92,7 +91,6 @@ class KontrahentForm(ModelForm):
 
 
 class ZdarzenieForm(ModelForm):
-
     class Meta(ModelForm):
         model = Zdarzenie
         fields = ['data_zdarzenia', 'temat', 'typ', 'notatka', 'kontrahent']
@@ -103,21 +101,18 @@ class ZdarzenieForm(ModelForm):
 
 
 class DokumentForm(ModelForm):
-
     class Meta(ModelForm):
         model = Dokument
         fields = ['tytul_dokumentu', 'nazwa_pliku']
 
 
 class AdresKontrahentForm(ModelForm):
-
     class Meta(ModelForm):
         model = AdresKontrahent
         exclude = ['kontrahent', 'czy_domyslny']
 
 
 class AdresKontrahentFormNew(ModelForm):
-
     class Meta(ModelForm):
         model = AdresKontrahent
         # fields = '__all__'

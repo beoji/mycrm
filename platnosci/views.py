@@ -1,18 +1,16 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib import messages
-from django.db.models import Count
-from django.db.models.functions import TruncMonth
-from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.views import generic
-from django.shortcuts import render
-from django.template.loader import render_to_string
-from datetime import datetime
 import datetime
 from calendar import *
+from datetime import datetime
+
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.template.loader import render_to_string
+from django.views import generic
+
 from escrm.models import Platnosc
 from .forms import PlatnoscForm
-from django.db.models import Q
+
 
 class CalendarView(LoginRequiredMixin, generic.View):
     template = 'platnosci/kalendarz.html'
@@ -44,7 +42,7 @@ class CalendarView(LoginRequiredMixin, generic.View):
         month = int(context['month'])
         year = int(context['year'])
         events_today = Platnosc.objects.filter(
-            termin=datetime.date(year,month,day)
+            termin=datetime.date(year, month, day)
         )
         print(events_today)
         return events_today

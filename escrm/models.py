@@ -1,17 +1,16 @@
 from __future__ import unicode_literals
 
-from django.db import models
+import os
+from datetime import date
+
+from django.contrib.auth.models import User
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count
-from django.db.models import Avg
+from django.db import models
 from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
-from django.urls import reverse
-from django.contrib.auth.models import User
 from django.http import HttpResponseRedirect
-from datetime import date
-import os
+from django.urls import reverse
 
 
 class Profil(models.Model):
@@ -28,7 +27,6 @@ class Profil(models.Model):
 
 
 class Kontrahent(models.Model):
-
     # Fields
     id_kontrahenta = models.AutoField(primary_key=True)
     nazwa_krotka = models.CharField(max_length=50, verbose_name="Nazwa krótka")
@@ -52,7 +50,6 @@ class Kontrahent(models.Model):
 
 
 class TypAdresu(models.Model):
-
     id = models.AutoField(primary_key=True)
     nazwa = models.CharField(max_length=60, null=False, blank=False)
 
@@ -62,7 +59,6 @@ class TypAdresu(models.Model):
 
 
 class AdresKontrahent(models.Model):
-
     id_adresu = models.AutoField(primary_key=True)
     miasto = models.CharField(max_length=45)
     kod_pocztowy = models.CharField(max_length=6)
@@ -84,7 +80,6 @@ def change_default_kontrahent_adres(sender, instance, **kwargs):
 
 
 class Osoba(models.Model):
-
     id_osoby = models.AutoField(primary_key=True)
     imie = models.CharField(max_length=60, verbose_name="Imię")
     nazwisko = models.CharField(max_length=60)
@@ -100,7 +95,6 @@ class Osoba(models.Model):
 
 
 class AdresOsoba(models.Model):
-
     id_adresu = models.AutoField(primary_key=True)
     email = models.CharField(max_length=255)
     telefon = models.CharField(max_length=20)
@@ -109,7 +103,6 @@ class AdresOsoba(models.Model):
 
 
 class TypZdarzenia(models.Model):
-
     id_typu = models.AutoField(primary_key=True)
     nazwa_zdarzenia = models.CharField(max_length=45)
 
@@ -119,7 +112,6 @@ class TypZdarzenia(models.Model):
 
 
 class Zdarzenie(models.Model):
-
     id_zdarzenia = models.AutoField(primary_key=True)
     data_zdarzenia = models.DateTimeField(auto_now=False, auto_now_add=False)
     temat = models.CharField(max_length=255)
@@ -130,7 +122,6 @@ class Zdarzenie(models.Model):
 
 
 class StatusOferty(models.Model):
-
     id_statusu_oferty = models.AutoField(primary_key=True)
     nazwa_statusu = models.CharField(max_length=45)
 
@@ -139,7 +130,6 @@ class StatusOferty(models.Model):
 
 
 class Oferta(models.Model):
-
     id_oferty = models.AutoField(primary_key=True)
     temat = models.CharField(max_length=255)
     produkt = models.CharField(max_length=255)
@@ -160,7 +150,6 @@ class Oferta(models.Model):
 
 
 class StatusUmowy(models.Model):
-
     id_statusu = models.AutoField(primary_key=True)
     nazwa = models.CharField(max_length=45)
 
@@ -200,7 +189,6 @@ def set_upload_path(instance, filename):
 
 
 class Dokument(models.Model):
-
     prefix = ''
     id_dokumentu = models.AutoField(primary_key=True)
     tytul_dokumentu = models.CharField(max_length=255, verbose_name='Tytuł dokumentu')
@@ -222,7 +210,6 @@ def auto_delete_file_on_delete(sender, instance, **kwargs):
 
 
 class Platnosc(models.Model):
-
     id_platnosci = models.AutoField(primary_key=True)
     termin = models.DateField(auto_now=False, auto_now_add=False)
     kwota = models.DecimalField(max_digits=10, decimal_places=2)
@@ -241,12 +228,11 @@ class Platnosc(models.Model):
 
     def __str__(self):
         return 'Platność dla: ' + self.umowa.kontrahent.nazwa_krotka + \
-               ', o wartości: ' + str(self.kwota) + str(self.umowa.waluta) + \
-               ', płatna do: ' + str(self.termin)
+            ', o wartości: ' + str(self.kwota) + str(self.umowa.waluta) + \
+            ', płatna do: ' + str(self.termin)
 
 
 class AdresatNadawca(models.Model):
-
     id_adresata_nadawcy = models.AutoField(primary_key=True)
     nazwa = models.CharField(max_length=255, unique=True)
     miasto = models.CharField(max_length=255)

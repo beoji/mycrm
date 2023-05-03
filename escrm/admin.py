@@ -1,7 +1,8 @@
 # Register your models here.
 from django.contrib import admin
-from .models import Profil, Oferta, StatusOferty, Platnosc, TypAdresu, TypZdarzenia
+
 from .models import Kontrahent, Osoba, AdresKontrahent, AdresOsoba, AdresatNadawca, Korespondencja, Umowa, StatusUmowy
+from .models import Profil, Oferta, StatusOferty, Platnosc, TypAdresu, TypZdarzenia
 
 
 class ProfilAdmin(admin.ModelAdmin):
@@ -22,4 +23,3 @@ admin.site.register(StatusOferty)
 admin.site.register(Platnosc)
 admin.site.register(TypAdresu)
 admin.site.register(TypZdarzenia)
-
