@@ -27,12 +27,12 @@
         {% for oferta in lista_ofert %}
             <tr>
             <th scope="row">{{ forloop.counter }}</th>
-                <td><a href="{% url 'escrm:oferta-detail' pk=kontrahent.id_pk_oferty=oferta.pk %}">{{ oferta.temat }}</a></td>
+                <td><a href="{% url 'escrm:oferta-detail' pk=kontrahent.pk pk_oferty=oferta.pk %}">{{ oferta.temat }}</a></td>
                 <td>{{ oferta.produkt }}</td>
                 <td>{{ oferta.status.nazwa_statusu }}</td>
                 <td>{{ oferta.wartosc }} {{ oferta.waluta }}</td>
                 <td>
-                    <a class="btn btn-link btn-sm" data-toggle="tooltip" title="Edytuj ofertę" href="{% url 'escrm:oferta-update' kontrahent=kontrahent.id_kontrahenta pk=oferta.pk %}" style="padding: 0 0.5rem!important;">
+                    <a class="btn btn-link btn-sm" data-toggle="tooltip" title="Edytuj ofertę" href="{% url 'escrm:oferta-update' pk=kontrahent.pk pk_oferty=oferta.pk %}" style="padding: 0 0.5rem!important;">
                         <i class="fas fa-edit"></i>
                     </a>
                     <form action="{%  url 'escrm:oferta-delete' oferta.pk %}" method="post" class="form-inline">

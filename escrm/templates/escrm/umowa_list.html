@@ -27,12 +27,12 @@
         {% for umowa in lista_umow %}
             <tr>
             <th scope="row">{{ forloop.counter }}</th>
-                <td><a href="{% url 'escrm:umowa-detail' kontrahent=kontrahent.id_kontrahenta pk=umowa.pk %}">{{ umowa.temat }}</a></td>
+                <td><a href="{% url 'escrm:umowa-detail' pk=kontrahent.pk pk_umowy=umowa.pk %}">{{ umowa.temat }}</a></td>
                 <td>{{ umowa.produkt }}</td>
                 <td>{{ umowa.status.nazwa }}</td>
                 <td>{{ umowa.wartosc }} {{ umowa.waluta }}</td>
                 <td>
-                    <a class="btn btn-link btn-sm" data-toggle="tooltip" title="Edytuj umowę" href="{% url 'escrm:umowa-update' kontrahent=kontrahent.id_kontrahenta pk=umowa.pk %}" style="padding: 0 0.5rem!important;">
+                    <a class="btn btn-link btn-sm" data-toggle="tooltip" title="Edytuj umowę" href="{% url 'escrm:umowa-update' pk=kontrahent.pk pk_umowy=umowa.pk %}" style="padding: 0 0.5rem!important;">
                         <i class="fas fa-edit"></i>
                     </a>
                     <form action="{%  url 'escrm:umowa-delete' umowa.pk %}" method="post" class="form-inline">

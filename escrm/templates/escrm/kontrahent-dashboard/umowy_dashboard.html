@@ -15,7 +15,7 @@
         </tr>
             {% for umowa in umowy %}
                 <tr>
-                    <td><a href="{% url 'escrm:umowa-detail' kontrahent=kontrahent.id_kontrahenta pk=umowa.pk %}">{{ umowa.temat }}</a></td>
+                    <td><a href="{% url 'escrm:umowa-detail' pk=kontrahent.pk pk_umowy=umowa.pk %}">{{ umowa.temat }}</a></td>
                 </tr>
             {% endfor %}
         </table>

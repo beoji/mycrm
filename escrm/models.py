@@ -19,11 +19,6 @@ class Profil(models.Model):
     telefon = models.CharField(max_length=15, blank=True)
     stanowisko = models.CharField(max_length=100, blank=True)
 
-    # Metadata
-    class Meta:
-        managed = True
-        db_table = 'profil'
-
     # Methods
     def __str__(self):
         return self.user.first_name + ' ' + self.user.last_name
@@ -55,11 +50,6 @@ class Kontrahent(models.Model):
     def get_last_oferty(self, last):
         return self.oferta_set.all().order_by('-data_sporzadzenia')[:last]
 
-    # Metadata
-    class Meta:
-        managed = True
-        db_table = 'kontrahent'
-
 
 class TypAdresu(models.Model):
 
@@ -69,11 +59,6 @@ class TypAdresu(models.Model):
     # Methods
     def __str__(self):
         return self.nazwa
-
-    # Metadata
-    class Meta:
-        managed = True
-        db_table = 'typ_adresu'
 
 
 class AdresKontrahent(models.Model):
@@ -88,10 +73,6 @@ class AdresKontrahent(models.Model):
 
     def __str__(self):
         return self.ulica + ', ' + self.miasto
-
-    class Meta:
-        managed = True
-        db_table = 'adres_kontrahent'
 
 
 @receiver(pre_save, sender=AdresKontrahent)
@@ -117,10 +98,6 @@ class Osoba(models.Model):
     def get_absolute_url(self):
         return reverse('escrm:osoba-detail', kwargs={'pk': self.pk})
 
-    class Meta:
-        managed = True
-        db_table = 'osoba'
-
 
 class AdresOsoba(models.Model):
 
@@ -129,10 +106,6 @@ class AdresOsoba(models.Model):
     telefon = models.CharField(max_length=20)
     osoba = models.ForeignKey(Osoba, on_delete=models.CASCADE)
     czy_domyslny = models.BooleanField(default=False)
-
-    class Meta:
-        managed = True
-        db_table = 'adres_osoba'
 
 
 class TypZdarzenia(models.Model):
@@ -143,11 +116,6 @@ class TypZdarzenia(models.Model):
     # Methods
     def __str__(self):
         return self.nazwa_zdarzenia
-
-    # Metadata
-    class Meta:
-        managed = True
-        db_table = 'typ_zdarzenia'
 
 
 class Zdarzenie(models.Model):
@@ -160,10 +128,6 @@ class Zdarzenie(models.Model):
     kontrahent = models.ForeignKey(Kontrahent, on_delete=models.PROTECT)
     notatka = models.TextField()
 
-    class Meta:
-        managed = True
-        db_table = 'zdarzenie'
-
 
 class StatusOferty(models.Model):
 
@@ -172,10 +136,6 @@ class StatusOferty(models.Model):
 
     def __str__(self):
         return self.nazwa_statusu
-
-    class Meta:
-        managed = True
-        db_table = 'status_oferty'
 
 
 class Oferta(models.Model):
@@ -193,27 +153,16 @@ class Oferta(models.Model):
     opiekun = models.ForeignKey(Profil, null=True, blank=True, on_delete=models.PROTECT)
     oferta_rodzic = models.ForeignKey('self', null=True, blank=True, on_delete=models.PROTECT)
 
-    class Meta:
-        managed = True
-        db_table = 'oferta'
-
     # prawdopodobnie do usunięcia
     @property
     def is_owner_of(self, profil):
-        if self.opiekun == profil:
-            return True
-        else:
-            return False
+        return True if self.opiekun == profil else False
 
 
 class StatusUmowy(models.Model):
 
     id_statusu = models.AutoField(primary_key=True)
     nazwa = models.CharField(max_length=45)
-
-    class Meta:
-        managed = True
-        db_table = 'status_umowy'
 
     # Methods
     def __str__(self):
@@ -240,10 +189,6 @@ class Umowa(models.Model):
     def __str__(self):
         return ' Do: ' + self.termin_waznosci.strftime('%m/%d/%Y') + ', ' + self.temat
 
-    class Meta:
-        managed = True
-        db_table = 'umowa'
-
 
 def set_upload_path(instance, filename):
     rok = date.today().year
@@ -264,10 +209,6 @@ class Dokument(models.Model):
     umowa = models.ForeignKey(Umowa, null=True, on_delete=models.PROTECT)
     oferta = models.ForeignKey(Oferta, null=True, on_delete=models.PROTECT)
     uzytkownik = models.ForeignKey(Profil, on_delete=models.PROTECT)
-
-    class Meta:
-        managed = True
-        db_table = 'dokument'
 
 
 @receiver(models.signals.post_delete, sender=Dokument)
@@ -303,11 +244,6 @@ class Platnosc(models.Model):
                ', o wartości: ' + str(self.kwota) + str(self.umowa.waluta) + \
                ', płatna do: ' + str(self.termin)
 
-    class Meta:
-        managed = True
-        db_table = 'platnosc'
-        ordering = ['termin']
-
 
 class AdresatNadawca(models.Model):
 
@@ -322,10 +258,6 @@ class AdresatNadawca(models.Model):
 
     def get_absolute_url(self):
         return reverse('korespondencja:kontakt-list')
-
-    class Meta:
-        managed = True
-        db_table = 'adresat_nadawca'
 
 
 class Korespondencja(models.Model):
@@ -345,11 +277,6 @@ class Korespondencja(models.Model):
 
     def __str__(self):
         return self.temat
-
-    class Meta:
-        managed = True
-        db_table = 'korespondencja'
-        ordering = ['-numer_korespondencji', ]
 
 
 def post_save_korespondencja(sender, instance, *args, **kwargs):
@@ -372,10 +299,6 @@ class PlikKorespondencji(models.Model):
     nazwa_pliku = models.CharField(max_length=255)
     sciezka_do_pliku = models.CharField(max_length=255)
     korespondencja = models.ForeignKey(Korespondencja, on_delete=models.CASCADE)
-
-    class Meta:
-        managed = True
-        db_table = 'plik_korespondencji'
 
 
 @receiver(post_save, sender=User)

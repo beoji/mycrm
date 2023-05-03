@@ -24,7 +24,7 @@
         {% for umowa in lista_umow %}
             <tr>
             <th scope="row">{{ forloop.counter }}</th>
-                <td><a href="{% url 'escrm:umowa-detail' kontrahent=umowa.kontrahent.pk pk=umowa.pk %}">{{ umowa.temat }}</a></td>
+                <td><a href="{% url 'escrm:umowa-detail' pk=umowa.kontrahent.pk pk_umowy=umowa.pk %}">{{ umowa.temat }}</a></td>
                 <td>{{ umowa.produkt }}</td>
                 <td><a href="{% url 'escrm:kontrahent-detail' umowa.kontrahent.id_kontrahenta %}">{{ umowa.kontrahent.nazwa_dluga }}</a></td>
                 <td>{{ umowa.status.nazwa }}</td>

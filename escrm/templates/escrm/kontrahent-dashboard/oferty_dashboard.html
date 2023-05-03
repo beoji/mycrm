@@ -15,7 +15,7 @@
         </tr>
             {% for oferta in oferty %}
                 <tr>
-                    <td><a href="{% url 'escrm:oferta-detail' pk=kontrahent.id_pk_oferty=oferta.pk %}">{{ oferta.temat }}</a></td>
+                    <td><a href="{% url 'escrm:oferta-detail' pk=kontrahent.pk pk_oferty=oferta.pk %}">{{ oferta.temat }}</a></td>
                 </tr>
             {% endfor %}
         </table>

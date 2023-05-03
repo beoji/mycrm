@@ -1,27 +1,29 @@
-from django.contrib.auth.decorators import login_required
-from django.contrib.messages.views import SuccessMessageMixin
-from django.contrib.auth.mixins import LoginRequiredMixin
+import calendar
+import datetime
+import mimetypes
+import os
+from math import ceil
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.messages.views import SuccessMessageMixin
+from django.db.models import ProtectedError
 from django.forms import HiddenInput, ModelChoiceField, CharField
 from django.http import HttpResponseRedirect, HttpResponse, JsonResponse
-from django.views import generic
-from django.urls import reverse_lazy
-from django.template.loader import render_to_string
-from django.shortcuts import get_object_or_404, render
-from .forms import OsobaForm, AdresOsobaForm, KontrahentForm, AdresKontrahentForm, AdresKontrahentFormNew, OfertaForm
-from .forms import OfertaEditForm, ZdarzenieForm, DokumentForm
-from .forms import UmowaForm, PlatnoscForm
-from django.db.models import ProtectedError
-from .models import Profil, Oferta, Platnosc
-from .models import Kontrahent, Osoba, Umowa, Dokument
-from .models import Zdarzenie, TypZdarzenia, AdresKontrahent, AdresOsoba
-from math import ceil
-import datetime
-from django.utils import timezone
-import calendar
 from django.http import StreamingHttpResponse
-import os
-import mimetypes
+from django.shortcuts import get_object_or_404, render
+from django.template.loader import render_to_string
+from django.urls import reverse_lazy
+from django.utils import timezone
+from django.views import generic
+
+from .forms import OfertaEditForm, ZdarzenieForm, DokumentForm
+from .forms import OsobaForm, AdresOsobaForm, KontrahentForm, AdresKontrahentForm, AdresKontrahentFormNew, OfertaForm
+from .forms import UmowaForm, PlatnoscForm
+from .models import Kontrahent, Osoba, Umowa, Dokument
+from .models import Profil, Oferta, Platnosc
+from .models import Zdarzenie, TypZdarzenia, AdresKontrahent, AdresOsoba
 
 
 class CrmDashboard(LoginRequiredMixin, generic.TemplateView):
@@ -112,7 +114,8 @@ class KontrahentUpdate(LoginRequiredMixin, generic.UpdateView):
     fields = ['nazwa_krotka', 'nazwa_dluga', 'nip', 'telefon', 'email']
 
     def get_queryset(self):
-        if self.request.user.groups.filter(name__in=["szef_dzialu_sprzedazy", "prezes"]).exists() or self.request.user.is_staff:
+        if self.request.user.groups.filter(
+                name__in=["szef_dzialu_sprzedazy", "prezes"]).exists() or self.request.user.is_staff:
             self.fields.append('opiekun')
         return Kontrahent.objects.filter(pk=self.kwargs.get('pk'))
 
@@ -152,8 +155,8 @@ def kontrahent_dashboard(request, pk):
 @login_required
 def kontrahent_take(request, pk):
     """ dodanie opiekuna do kontrahenta """
-    # mimo, że w widoku opcja umożliwiająca wybranie siebie opiekunem nie beędzie widoczna jeżeli brak uprawnień lub
-    # opiekun już przypisany (chyba, że ES zdecyduje inaczej) to tutaj również należy sprawdzić wszystkie konieczne
+    # mimo że w widoku opcja umożliwiająca wybranie siebie opiekunem nie będzie widoczna, jeżeli brak uprawnień lub
+    # opiekun już przypisany (chyba że ES zdecyduje inaczej) to tutaj również należy sprawdzić wszystkie konieczne
     # warunki
 
     # 1. użytkownik zalogowany
@@ -169,6 +172,7 @@ def kontrahent_take(request, pk):
         message = "Kontrahent ma już przypisanego opiekuna"
         messages.error(request, message)
         return HttpResponseRedirect(reverse_lazy('escrm:kontrahent-list'))
+
 
 # ADRES_KONTRAHENT -
 
@@ -194,15 +198,15 @@ def adres_kontrahent_create(request):
         if nowy_adres.is_valid():
             nowy_adres.save()
             list_modal = render_to_string('escrm/adresy/kontrahentadres_list_modal.html',
-                                         {'object': nowy_adres.cleaned_data.get('kontrahent')})
+                                          {'object': nowy_adres.cleaned_data.get('kontrahent')})
             brand_new_form = render_to_string('escrm/adresy/kontrahentadres_form_modal.html',
-                                             {'form_adres': AdresKontrahentFormNew()})
+                                              {'form_adres': AdresKontrahentFormNew()})
             data['list_modal'] = list_modal
             data['is_valid'] = 'True'
             data['new_form'] = brand_new_form
         else:
             invalid_form = render_to_string('escrm/adresy/kontrahentadres_form_modal.html',
-                                           {'form_adres': nowy_adres})
+                                            {'form_adres': nowy_adres})
             data['is_valid'] = 'False'
             data['invalid_form'] = invalid_form
         return JsonResponse(data)
@@ -217,7 +221,7 @@ def adres_kontrahent_update(request):
             adres = AdresKontrahent.objects.get(pk=pk)
             adres_bounded = AdresKontrahentFormNew(instance=adres)
             rendered = render_to_string('escrm/adresy/kontrahentadres_form_modal.html',
-                                        {'form_adres': adres_bounded, 'role': 'update', 'pk': adres.pk, },)
+                                        {'form_adres': adres_bounded, 'role': 'update', 'pk': adres.pk, }, )
             data['result'] = 'success'
             data['modal'] = rendered
         else:
@@ -234,12 +238,12 @@ def adres_kontrahent_update_saving(request, pk):
         if adres_to_save.is_valid():
             adres_to_save.save()
             list_modal = render_to_string('escrm/adresy/kontrahentadres_list_modal.html',
-                                       {'object': adres_to_save.cleaned_data.get('kontrahent')},)
+                                          {'object': adres_to_save.cleaned_data.get('kontrahent')}, )
             data['is_valid'] = 'True'
             data['list_modal'] = list_modal
         else:
             invalid_form = render_to_string('escrm/adresy/kontrahentadres_form_modal.html',
-                                           {'form_adres': adres_to_save, 'role': 'update', 'pk': adres.pk,})
+                                            {'form_adres': adres_to_save, 'role': 'update', 'pk': adres.pk, })
             data['is_valid'] = 'False'
             data['invalid_form'] = invalid_form
         return JsonResponse(data)
@@ -292,12 +296,12 @@ def osoba_create(request):
         ctx['is_valid'] = 'True'
         ctx['table'] = render_to_string('escrm/osoby/osoba_table.html', {'kontrahent': kontrahent}, request=request)
         ctx['new_modal'] = render_to_string('escrm/osoby/osoba_form_create_modal.html',
-                                           {'form_osoba': OsobaForm(),
-                                            'form_osoba_adres': AdresOsobaForm(), 'object': kontrahent })
+                                            {'form_osoba': OsobaForm(),
+                                             'form_osoba_adres': AdresOsobaForm(), 'object': kontrahent})
     else:
         invalid_form = render_to_string('escrm/osoby/osoba_form_create_modal.html',
                                         {'form_osoba': osoba,
-                                         'form_osoba_adres': adres, 'object': kontrahent })
+                                         'form_osoba_adres': adres, 'object': kontrahent})
         ctx['is_valid'] = 'False'
         ctx['invalid_form'] = invalid_form
     return JsonResponse(ctx)
@@ -330,10 +334,10 @@ def osoba_update_saving(request, pk):
                 print(kontrahent_id)
                 kontrahent = Kontrahent.objects.get(pk=kontrahent_id)
                 rendered_table = render_to_string('escrm/osoby/osoba_table.html',
-                                                {'kontrahent': kontrahent,}, request=request)
+                                                  {'kontrahent': kontrahent, }, request=request)
                 data['table'] = rendered_table
             detail_content = render_to_string('escrm/osoby/osoba_detail_content_render.html',
-                                              {'osoba': osoba,})
+                                              {'osoba': osoba, })
             data['detail'] = detail_content
             data['is_valid'] = 'True'
         else:
@@ -354,6 +358,7 @@ class OsobaDelete(LoginRequiredMixin, generic.DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, self.success_message)
         return super(OsobaDelete, self).delete(request, *args, **kwargs)
+
 
 # ADRES_OSOBA
 
@@ -403,7 +408,8 @@ def adres_osoba_update(request):
                 adres = AdresOsoba.objects.get(pk=pk)
                 form = AdresOsobaForm(instance=adres)
                 ctx['modal'] = render_to_string('escrm/adresy/osobaadres_form_modal.html',
-                                                context={'form': form, 'object': adres, 'role': 'update'}, request=request)
+                                                context={'form': form, 'object': adres, 'role': 'update'},
+                                                request=request)
     return JsonResponse(ctx)
 
 
@@ -416,12 +422,13 @@ def adres_osoba_update_saving(request, pk):
         if adres_to_save.is_valid():
             adr = adres_to_save.save()
             table = render_to_string('escrm/adresy/osobaadres_table.html',
-                                    {'osoba': adr.osoba})
+                                     {'osoba': adr.osoba})
             data['table'] = table
             data['is_valid'] = 'True'
         else:
             data['invalid_form'] = render_to_string('escrm/adresy/osobaadres_form_modal.html',
-                                                    {'form': adres_to_save, 'object': adres, 'role': 'update'}, request=request)
+                                                    {'form': adres_to_save, 'object': adres, 'role': 'update'},
+                                                    request=request)
             data['is_valid'] = 'False'
         return JsonResponse(data)
 
@@ -434,10 +441,11 @@ class ProduktyList(LoginRequiredMixin, generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(ProduktyList, self).get_context_data(**kwargs)
-        #umowy = Umowa.objects.order_by('-data_sporzadzenia')
+        # umowy = Umowa.objects.order_by('-data_sporzadzenia')
         oferty = Oferta.objects.order_by('-data_sporzadzenia')
         context['lista_produktow'] = oferty
         return context
+
 
 # DOKUMENTY
 
@@ -474,7 +482,6 @@ class ProduktyList(LoginRequiredMixin, generic.TemplateView):
 
 @login_required
 def serve_using_django_in_chunks(request, filename):
-
     # file_full_path = settings.MEDIA_URL + filename
     if not os.path.isfile(filename):
         messages.error(request, 'Podany plik nie istnieje')
@@ -488,7 +495,7 @@ def serve_using_django_in_chunks(request, filename):
         mime_type = 'application/octet-stream'
     response['Content-Type'] = mime_type
     if encoding is not None:
-            response['Content-Encoding'] = encoding
+        response['Content-Encoding'] = encoding
 
     response['Content-Disposition'] = "attachment; filename={0}".format(filename)
     response['Content-Length'] = os.path.getsize(file_full_path)
@@ -519,10 +526,6 @@ class DokumentDelete(LoginRequiredMixin, generic.DeleteView):
 @login_required
 def dokument_add(request, pk):
     dokument_form = DokumentForm(request.POST, request.FILES)
-
-    # print(request.POST)
-    # print(request.FILES)
-    # print(dokument_form.errors)
     typ = request.POST.get('typ')
     context = dict()
 
@@ -535,7 +538,6 @@ def dokument_add(request, pk):
             dokument_form.instance.oferta = oferta
             dokument_form.save()
             messages.success(request, 'Plik został dodany do oferty')
-            # return reverse_lazy('escrm:oferta-detail', kwargs={'pk': pk, 'pk_oferty': oferta.kontrahent.id_kontrahenta})
             return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
         elif typ == 'umowa':
             umowa = get_object_or_404(Umowa, pk=pk)
@@ -578,7 +580,8 @@ class OfertaCreate(LoginRequiredMixin, generic.CreateView):
                 form_dokument.instance.oferta = oferta
                 form_dokument.save()
                 messages.success(self.request, self.message)
-                return HttpResponseRedirect(reverse_lazy('escrm:kontrahent-oferty', kwargs={'pk': oferta.kontrahent.pk}))
+                return HttpResponseRedirect(
+                    reverse_lazy('escrm:kontrahent-oferty', kwargs={'pk': oferta.kontrahent.pk}))
             else:
                 return render(request, self.template, self.get_context_data())
         else:
@@ -586,7 +589,8 @@ class OfertaCreate(LoginRequiredMixin, generic.CreateView):
                 form_oferta.instance.opiekun = self.request.user.profil
                 oferta = form_oferta.save()
                 messages.success(self.request, self.message)
-                return HttpResponseRedirect(reverse_lazy('escrm:kontrahent-oferty', kwargs={'pk': oferta.kontrahent.pk}))
+                return HttpResponseRedirect(
+                    reverse_lazy('escrm:kontrahent-oferty', kwargs={'pk': oferta.kontrahent.pk}))
             else:
                 return render(request, self.template, self.get_context_data())
 
@@ -620,7 +624,7 @@ class OfertaDetail(LoginRequiredMixin, generic.DetailView):
         context['form_dokument'].fields['nazwa_pliku'].required = False
         context['form_dokument'].fields['tytul_dokumentu'].required = False
         context['form_dokument'].fields['typ'] = CharField(widget=HiddenInput(), initial='oferta')
-        context['kontrahent'] = get_object_or_404(Kontrahent, pk=self.kwargs.get('kontrahent', None))
+        context['kontrahent'] = get_object_or_404(Kontrahent, pk=self.kwargs.get('pk', None))
         context['next'] = self.request.META.get('HTTP_REFERER')
         return context
 
@@ -650,6 +654,7 @@ class OfertaUpdate(LoginRequiredMixin, SuccessMessageMixin, generic.UpdateView):
 class OfertyDlaKontrahenta(LoginRequiredMixin, generic.ListView):
     model = Oferta
     template_name = 'escrm/oferta_list.html'
+
     # context_object_name = 'lista_ofert'
 
     def get_context_data(self, **kwargs):
@@ -669,7 +674,7 @@ def umowa_valid(request, pk):
     context = dict()
     kontrahent = get_object_or_404(Kontrahent, pk=pk)
     bounded_agreement_form = render_to_string('escrm/umowa/agreement.html', {'form_umowa': agree_form,
-                                                                            'kontrahent': kontrahent}, request)
+                                                                             'kontrahent': kontrahent}, request)
     if not agree_form.is_valid():
         context['is_valid'] = 'False'
     else:
@@ -685,11 +690,11 @@ def diff_month(d1, d2):
     return (d1.year - d2.year) * 12 + d1.month - d2.month
 
 
-def add_months(sourcedate,months):
+def add_months(sourcedate, months):
     month = sourcedate.month - 1 + months
     year = sourcedate.year + month // 12
     month = month % 12 + 1
-    day = min(sourcedate.day, calendar.monthrange(year,month)[1])
+    day = min(sourcedate.day, calendar.monthrange(year, month)[1])
     return datetime.date(year, month, day)
 
 
@@ -724,7 +729,7 @@ class UmowaCreate(LoginRequiredMixin, generic.View):
                     monthly_payment = agreement.wartosc / datediff
                     payment_list = list()
                     for month in range(datediff):
-                        date = add_months(datetime.datetime.now(), month+1)
+                        date = add_months(datetime.datetime.now(), month + 1)
                         if payment_form.cleaned_data.get('cyclic_type') == 'pierwszego':
                             date = date.replace(day=1)
                         elif payment_form.cleaned_data.get('cyclic_type') == 'okreslonego':
@@ -755,7 +760,7 @@ class UmowaDetail(LoginRequiredMixin, generic.DetailView):
         context['form_dokument'].fields['nazwa_pliku'].required = False
         context['form_dokument'].fields['tytul_dokumentu'].required = False
         context['form_dokument'].fields['typ'] = CharField(widget=HiddenInput(), initial='umowa')
-        context['kontrahent'] = get_object_or_404(Kontrahent, pk=self.kwargs.get('kontrahent', None))
+        context['kontrahent'] = get_object_or_404(Kontrahent, pk=self.kwargs.get('pk', None))
         context['platnosc_set'] = self.object.platnosc_set.all()
         context['next'] = self.request.META.get('HTTP_REFERER')
         return context
@@ -789,7 +794,7 @@ class UmowyDlaKontrahenta(LoginRequiredMixin, generic.ListView):
 class UmowaUpdate(LoginRequiredMixin, SuccessMessageMixin, generic.UpdateView):
     model = Umowa
     fields = ['temat', 'produkt', 'termin_waznosci', 'wartosc', 'status'
-               ,'data_platnosci', 'waluta', 'termin_platnosci']
+        , 'data_platnosci', 'waluta', 'termin_platnosci']
     template_name = 'escrm/umowa_update.html'
     success_message = 'Zmiany zostały zapisane.'
 
@@ -804,9 +809,10 @@ class PlatnoscUpdate(LoginRequiredMixin, generic.UpdateView):
     success_message = 'Zapisano zmiany dotyczące płatności nr '
 
     def get_success_url(self):
-        pk = self.umowa.pk
-        kontrahent = self.umowa.kontrahent.pk
-        return reverse_lazy('escrm:umowa-detail', kwargs={'pk': pk, 'kontrahent': kontrahent})
+        print(self.get_object())
+        pk_umowy = self.get_object().umowa.pk
+        pk = self.get_object().umowa.kontrahent.pk
+        return reverse_lazy('escrm:umowa-detail', kwargs={'pk': pk, 'pk_umowy': pk_umowy})
 
     def get_success_message(self):
         return self.success_message + self.pk
@@ -865,7 +871,7 @@ class ZdarzenieCreate(LoginRequiredMixin, generic.CreateView):
 
     def get_success_url(self):
         # success_url = self.request.META.get('HTTP_REFERER')
-        return reverse_lazy('escrm:kontrahent-zdarzenia',  kwargs={'pk': self.kwargs.get('pk')})
+        return reverse_lazy('escrm:kontrahent-zdarzenia', kwargs={'pk': self.kwargs.get('pk')})
         # return success_url
 
 
@@ -958,5 +964,5 @@ class OpiekunZdarzenia(LoginRequiredMixin, generic.ListView):
         context = super(OpiekunZdarzenia, self).get_context_data(**kwargs)
         context['lista_zdarzen'] = Zdarzenie.objects.filter(uzytkownik=self.request.user.profil)
         context['breadcrumb_name'] = 'Moje zdarzenia'
-        context[ 'next' ] = self.request.META.get('HTTP_REFERER')
+        context['next'] = self.request.META.get('HTTP_REFERER')
         return context
